@@ -1030,9 +1030,25 @@ def recog(args):
                         feat, args, train_args.char_list
                     )
                 else:
-                    nbest_hyps = model.recognize(
+                    # [ADD] local_scores_list(per one sentence)
+                    # [BEFORE] nbest_hyps = model.recognize(
+                    nbest_hyps, local_scores_list = model.recognize(
                         feat, args, train_args.char_list, rnnlm
                     )
+                # [ADD] pickle save in decoder_dir
+                from pathlib import Path
+                import pickle
+                p = Path()
+                output_dir = p / args.decode_dir
+                if not output_dir.exists():
+                    output_dir.mkdir(parents=True)
+
+                decoder_output = [nbest_hyps, [local_scores_list]]
+                pickle_path = output_dir / name
+                if not pickle_path.exists():
+                    with pickle_path.open(mode='wb') as f:
+                        pickle.dump(decoder_output, f)
+
                 new_js[name] = add_results_to_json(
                     js[name], nbest_hyps, train_args.char_list
                 )

@@ -221,6 +221,14 @@ def get_parser():
         default=0.999,
         help="Threshold probability for CTC output",
     )
+    #[ADD]
+    parser.add_argument(
+        "--decode-dir",
+        type=str,
+        default=None,
+        help="decoder_dir",
+    )
+
 
     return parser
 

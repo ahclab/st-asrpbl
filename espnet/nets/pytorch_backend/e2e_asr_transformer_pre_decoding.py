@@ -495,6 +495,10 @@ class E2E(ASRInterface, torch.nn.Module):
         import six
 
         traced_decoder = None
+        # [ADD]
+        # posterior list of one sentence
+        local_scores_list = []
+
         for i in six.moves.range(maxlen):
             logging.debug("position " + str(i))
 
@@ -549,6 +553,10 @@ class E2E(ASRInterface, torch.nn.Module):
                     local_best_scores, local_best_ids = torch.topk(
                         local_scores, beam, dim=1
                     )
+                    # [ADD]
+                    assert len(local_scores) == 1
+                    #local_scores_list.append(local_scores[0])
+                    local_scores_list.append(local_scores[0].tolist())
 
                 for j in six.moves.range(beam):
                     new_hyp = {}
@@ -640,7 +648,9 @@ class E2E(ASRInterface, torch.nn.Module):
             "normalized log probability: "
             + str(nbest_hyps[0]["score"] / len(nbest_hyps[0]["yseq"]))
         )
-        return nbest_hyps
+        # [ADD] local_scores_list (per one sentence)
+        # [BEFORE] return nbest_hyps
+        return nbest_hyps, local_scores_list
 
     def recognize_maskctc(self, x, recog_args, char_list=None):
         """Non-autoregressive decoding using Mask CTC.
