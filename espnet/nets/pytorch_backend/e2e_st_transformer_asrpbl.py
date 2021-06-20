@@ -11,6 +11,11 @@ from distutils.util import strtobool
 import logging
 import math
 
+# [ADD]
+from collections import Counter
+from pathlib import Path
+import pickle
+
 import torch
 
 from espnet.nets.e2e_asr_common import end_detect
@@ -30,6 +35,10 @@ from espnet.nets.pytorch_backend.transformer.encoder import Encoder
 from espnet.nets.pytorch_backend.transformer.initializer import initialize
 from espnet.nets.pytorch_backend.transformer.label_smoothing_loss import (
     LabelSmoothingLoss,  # noqa: H301
+)
+# [ADD]
+from espnet.nets.pytorch_backend.transformer.posterior_based_loss import (
+    PosteriorBasedLoss,  # noqa: H301
 )
 from espnet.nets.pytorch_backend.transformer.mask import subsequent_mask
 from espnet.nets.pytorch_backend.transformer.mask import target_mask
@@ -255,11 +264,25 @@ class E2E(STInterface, torch.nn.Module):
         self.ignore_id = ignore_id
         self.subsample = get_subsample(args, mode="st", arch="transformer")
         self.reporter = Reporter()
-
-        self.criterion = LabelSmoothingLoss(
+        # [ADD]
+        self.batch_size = args.batch_size
+        self.criterion_st = LabelSmoothingLoss(
             self.odim,
             self.ignore_id,
-            args.lsm_weight,
+            args.lsm_weight_st,
+            args.transformer_length_normalized_loss,
+        )
+        # asrpbl
+        self.criterion_asr = PosteriorBasedLoss(
+            self.odim,
+            self.ignore_id,
+            args.lsm_weight_asr,
+            args.transformer_length_normalized_loss,
+        )
+        self.criterion_mt = LabelSmoothingLoss(
+            self.odim,
+            self.ignore_id,
+            args.lsm_weight_mt,
             args.transformer_length_normalized_loss,
         )
         # submodule for ASR task
@@ -306,7 +329,6 @@ class E2E(STInterface, torch.nn.Module):
         self.error_calculator = MTErrorCalculator(
             args.char_list, args.sym_space, args.sym_blank, args.report_bleu
         )
-
         # recognition error calculator
         self.error_calculator_asr = ASRErrorCalculator(
             args.char_list,
@@ -320,6 +342,8 @@ class E2E(STInterface, torch.nn.Module):
         # multilingual E2E-ST related
         self.multilingual = getattr(args, "multilingual", False)
         self.replace_sos = getattr(args, "replace_sos", False)
+        # [ADD]
+        self.args = args
 
     def reset_parameters(self, args):
         """Initialize parameters."""
@@ -330,7 +354,9 @@ class E2E(STInterface, torch.nn.Module):
             )
             torch.nn.init.constant_(self.encoder_mt.embed[0].weight[self.pad], 0)
 
-    def forward(self, xs_pad, ilens, ys_pad, ys_pad_src):
+    # [WILL ADD -> ADD] batch more information : uttid
+    # [ADD] uttid_list
+    def forward(self, xs_pad, ilens, ys_pad, ys_pad_src, uttid_list):
         """E2E forward.
 
         :param torch.Tensor xs_pad: batch of padded source sequences (B, Tmax, idim)
@@ -351,7 +377,101 @@ class E2E(STInterface, torch.nn.Module):
             ys_pad = ys_pad[:, 1:]  # remove target language ID in the beggining
 
         # 1. forward encoder
+        # this is mel batch
         xs_pad = xs_pad[:, : max(ilens)]  # for data parallel
+        self.xs_pad = xs_pad
+        '''
+        # not pre-decoding version
+        from torch.nn.utils.rnn import pack_padded_sequence
+        from espnet.asr.pytorch_backend.asr_init import load_trained_model
+        from espnet.nets.asr_interface import ASRInterface
+        model, train_args = load_trained_model(self.asr_prob_model)
+        assert isinstance(model, ASRInterface)
+        model.recog_args = self.args
+        # xs_pad = (32, 789, 83)
+        # make 64 fbank -> 1 fbank for decoder per one fbank
+        # like batch
+        xs_pad_batch_len = xs_pad.shape[0]
+        feat_max_len = xs_pad.shape[1]
+        n_mel = xs_pad.shape[2]
+        # doing decoding with asr
+        # [732] * 32
+        lens = [feat_max_len] * xs_pad_batch_len
+        hyps_list = []
+        sentences_scores_list = []
+        for i in range(xs_pad_batch_len):
+            # 0-31
+            feat = []
+            for j in range(feat_max_len):
+                # j : 0- 732
+                xp = xs_pad[i][j] # len(xp) = 83
+                su = torch.sum(xp)
+                xp_l = xp.tolist()
+                if su == 0:
+                    if xp_l == [0] * n_mel:
+                        break
+                    else:
+                        feat.append(xp_l)
+                else:
+                    feat.append(xp_l)
+            # list to tensor
+            feat = torch.tensor(feat) # 732, 83
+            # one feat -> asr model
+            nbest_hyps, local_scores_list = model.recognize(
+                feat, self.args, self.args.char_list, self.args.rnnlm
+            )
+            hyps_list.append(nbest_hyps) # exclude first sos 7806
+            sentences_scores_list.append(local_scores_list)
+        from copy import deepcopy
+        hyps_list_pre = deepcopy(hyps_list)
+        sentences_scores_list_pre = deepcopy(sentences_scores_list)
+        '''
+        # [ADD] use self.soft_label
+        # hyps_list = []
+        # sentences_scores_list = []
+        # for uttid in uttid_list:
+            # [WILLFIX]
+            # path_train_pickle = path_train / uttid
+            # path_dev_pickle = path_dev / uttid
+            # nbest_hyps, _local_scores_list = self.soft_label[uttid]
+                # with path_dev_pickle.open(mode='rb') as f:
+                #     nbest_hyps, _local_scores_list = pickle.load(f)
+                #  [WILLFIX] sorry inconvenient...
+        #    local_scores_list = _local_scores_list[0]
+        #    hyps_list.append(nbest_hyps)
+        #    sentences_scores_list.append(local_scores_list)
+        # [ADD] load hyps_list, local_scores_list
+        # pre-decoding load version
+        # load_from_dir = True
+        # if load_from_dir == True:
+        hyps_list = []
+        sentences_scores_list = []
+        pre_decoding_dir = self.args.pre_decoding_dir
+        path1 = Path()
+        path2 = Path()
+        path_train = path1 / pre_decoding_dir / 'train'
+        path_dev = path2 / pre_decoding_dir / 'dev'
+
+        for uttid in uttid_list:
+            # [WILLFIX]
+            path_train_pickle = path_train / uttid
+            path_dev_pickle = path_dev / uttid
+            if path_train_pickle.exists():
+                with path_train_pickle.open(mode='rb') as f:
+                    nbest_hyps, _local_scores_list = pickle.load(f)
+            elif path_dev_pickle.exists():
+                with path_dev_pickle.open(mode='rb') as f:
+                    nbest_hyps, _local_scores_list = pickle.load(f)
+                # [WILLFIX] sorry inconvenient...
+            local_scores_list = _local_scores_list[0]
+
+            hyps_list.append(nbest_hyps)
+            sentences_scores_list.append(local_scores_list)
+
+        # for test
+        # assert hyps_list == hyps_list_pre
+        # assert sentences_scores_list == sentences_scores_list_pre
+
         src_mask = (~make_pad_mask(ilens.tolist())).to(xs_pad.device).unsqueeze(-2)
         hs_pad, hs_mask = self.encoder(xs_pad, src_mask)
 
@@ -364,7 +484,7 @@ class E2E(STInterface, torch.nn.Module):
         pred_pad, pred_mask = self.decoder(ys_in_pad, ys_mask, hs_pad, hs_mask)
 
         # 3. compute ST loss
-        loss_att = self.criterion(pred_pad, ys_out_pad)
+        loss_att = self.criterion_st(pred_pad, ys_out_pad)
 
         self.acc = th_accuracy(
             pred_pad.view(-1, self.odim), ys_out_pad, ignore_label=self.ignore_id
@@ -378,8 +498,13 @@ class E2E(STInterface, torch.nn.Module):
             self.bleu = self.error_calculator(ys_hat.cpu(), ys_pad.cpu())
 
         # 5. compute auxiliary ASR loss
+        # [ADD]
+        self.hyps_list = hyps_list
+        self.sentences_scores_list = sentences_scores_list
+        soft_tgt_weight = self.args.soft_tgt_weight
+
         loss_asr_att, acc_asr, loss_asr_ctc, cer_ctc, cer, wer = self.forward_asr(
-            hs_pad, hs_mask, ys_pad_src
+            hs_pad, hs_mask, ys_pad_src, hyps_list, sentences_scores_list, soft_tgt_weight 
         )
 
         # 6. compute auxiliary MT loss
@@ -421,7 +546,10 @@ class E2E(STInterface, torch.nn.Module):
             logging.warning("loss (=%f) is not correct", loss_data)
         return self.loss
 
-    def forward_asr(self, hs_pad, hs_mask, ys_pad):
+    # [ADD]
+    # def forward_asr(self, hs_pad, hs_mask, ys_pad):
+    def forward_asr(self, hs_pad, hs_mask, ys_pad, hyps_list, sentences_scores_list, soft_tgt_weight): # size : batch size
+        # change here
         """Forward pass in the auxiliary ASR task.
 
         :param torch.Tensor hs_pad: batch of padded source sequences (B, Tmax, idim)
@@ -446,16 +574,16 @@ class E2E(STInterface, torch.nn.Module):
         cer_ctc = None
         if self.asr_weight == 0:
             return loss_att, acc, loss_ctc, cer_ctc, cer, wer
-
         # attention
         if self.mtlalpha < 1:
+            # ys is hidden states
             ys_in_pad_asr, ys_out_pad_asr = add_sos_eos(
                 ys_pad, self.sos, self.eos, self.ignore_id
             )
             ys_mask_asr = target_mask(ys_in_pad_asr, self.ignore_id)
             pred_pad, _ = self.decoder_asr(ys_in_pad_asr, ys_mask_asr, hs_pad, hs_mask)
-            loss_att = self.criterion(pred_pad, ys_out_pad_asr)
-
+            # [ADD] soft - hart tgt loss
+            loss_att = self.criterion_asr(pred_pad, ys_out_pad_asr, hyps_list, sentences_scores_list, soft_tgt_weight)
             acc = th_accuracy(
                 pred_pad.view(-1, self.odim),
                 ys_out_pad_asr,
@@ -464,7 +592,6 @@ class E2E(STInterface, torch.nn.Module):
             if not self.training:
                 ys_hat_asr = pred_pad.argmax(dim=-1)
                 cer, wer = self.error_calculator_asr(ys_hat_asr.cpu(), ys_pad.cpu())
-
         # CTC
         if self.mtlalpha > 0:
             batch_size = hs_pad.size(0)
@@ -505,7 +632,7 @@ class E2E(STInterface, torch.nn.Module):
         src_mask = (~make_pad_mask(ilens.tolist())).to(xs_zero_pad.device).unsqueeze(-2)
         hs_pad, hs_mask = self.encoder_mt(xs_zero_pad, src_mask)
         pred_pad, _ = self.decoder(ys_in_pad, ys_mask, hs_pad, hs_mask)
-        loss = self.criterion(pred_pad, ys_out_pad)
+        loss = self.criterion_mt(pred_pad, ys_out_pad)
         acc = th_accuracy(
             pred_pad.view(-1, self.odim), ys_out_pad, ignore_label=self.ignore_id
         )
@@ -706,7 +833,9 @@ class E2E(STInterface, torch.nn.Module):
         )
         return nbest_hyps
 
-    def calculate_all_attentions(self, xs_pad, ilens, ys_pad, ys_pad_src):
+    # [ADD] uttid_list
+    # def calculate_all_attentions(self, xs_pad, ilens, ys_pad, ys_pad_src):
+    def calculate_all_attentions(self, xs_pad, ilens, ys_pad, ys_pad_src, uttid_list):
         """E2E attention calculation.
 
         :param torch.Tensor xs_pad: batch of padded input sequences (B, Tmax, idim)
@@ -719,7 +848,8 @@ class E2E(STInterface, torch.nn.Module):
         """
         self.eval()
         with torch.no_grad():
-            self.forward(xs_pad, ilens, ys_pad, ys_pad_src)
+            # [ADD] uttid_list
+            self.forward(xs_pad, ilens, ys_pad, ys_pad_src, uttid_list)
         ret = dict()
         for name, m in self.named_modules():
             if (
