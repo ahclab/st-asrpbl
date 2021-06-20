@@ -159,8 +159,19 @@ def get_parser(parser=None, required=True):
         help="Multitask learning coefficient for MT task, weight: \
                                 mt_weight*mt_loss + (1-mt_weight-asr_weight)*st_loss",
     )
+    # [ADD] distinguish lsm-weight for ST-task and ASR-task
+    # [BEFORE]
+    # parser.add_argument(
+    #     "--lsm-weight", default=0.0, type=float, help="Label smoothing weight"
+    # )
     parser.add_argument(
-        "--lsm-weight", default=0.0, type=float, help="Label smoothing weight"
+        "--lsm-weight-st", default="", required=required, type=float, help="Label smoothing weight for ST-task"
+    )
+    parser.add_argument(
+        "--lsm-weight-asr", default="", required=required, type=float, help="Label smoothing weight for ASR-task"
+    )
+    parser.add_argument(
+        "--lsm-weight-mt", default="", required=required, type=float, help="Label smoothing weight for MT-task"
     )
     # recognition options to compute CER/WER
     parser.add_argument(
@@ -438,6 +449,13 @@ def get_parser(parser=None, required=True):
     )
     parser.add_argument("--fbank-fmin", type=float, default=0.0, help="")
     parser.add_argument("--fbank-fmax", type=float, default=None, help="")
+    # [ADD]
+    parser.add_argument(
+        "--pre-decoding-dir", default=None, required=required, type=str, help="dirpath includes hypothesis and local_scores_list by pre_decoding",
+    )
+    parser.add_argument(
+        "--soft-tgt-weight", default=None, required=required, type=float, help="soft-tgt-weight for asrpbl (0.0-1.0)"
+    )
     return parser
 
 
@@ -535,7 +553,9 @@ def main(cmd_args):
     logging.info("backend = " + args.backend)
 
     if args.backend == "pytorch":
-        from espnet.st.pytorch_backend.st import train
+        # [ADD]
+        # from espnet.st.pytorch_backend.st import train
+        from espnet.st.pytorch_backend.st_pbl import train
 
         train(args)
     else:
