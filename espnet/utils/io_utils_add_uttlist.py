@@ -191,7 +191,7 @@ class LoadInputsAndTargets(object):
         # [ADD] return uttid_list also
         # [BEFORE] return tuple(return_batch.values())
         utt_ll = [uttid_list]
-        return tuple(return_batch.values() + utt_ll)
+        return tuple(list(return_batch.values()) + utt_ll)
 
     def _create_batch_asr(self, x_feats_dict, y_feats_dict, uttid_list):
         """Create a OrderedDict for the mini-batch
