@@ -23,7 +23,9 @@ import torch
 from torch.nn.parallel import data_parallel
 
 from espnet.asr.asr_utils import adadelta_eps_decay
-from espnet.asr.asr_utils import add_results_to_json
+# [ADD]
+# [BEFORE] from espnet.asr.asr_utils import add_results_to_json
+from espnet.asr.asr_utils_pre_decoding import add_results_to_json
 from espnet.asr.asr_utils import CompareValueTrigger
 from espnet.asr.asr_utils import format_mulenc_args
 from espnet.asr.asr_utils import get_model_conf
@@ -1032,7 +1034,7 @@ def recog(args):
                 else:
                     # [ADD] local_scores_list(per one sentence)
                     # [BEFORE] nbest_hyps = model.recognize(
-                    nbest_hyps, local_scores_list = model.recognize(
+                    nbest_hyps, local_scores_list = model.recognize_pre_decoding(
                         feat, args, train_args.char_list, rnnlm
                     )
                 # [ADD] pickle save in decoder_dir

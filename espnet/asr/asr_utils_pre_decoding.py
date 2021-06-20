@@ -829,8 +829,8 @@ def add_results_to_json(js, nbest_hyps, char_list):
 
         # copy ground-truth
         if len(js["output"]) > 0:
-            # [FIX] for training set
-            # [BEFORE] out_dic = dict(js["output"][0].items())
+            # [FIX] for train and dev set (id0 -> target1,en / id1 -> target2,es)
+            # [BEFORE] out_dic = dict(js["output"][0].items()) # for test data (id0 -> es)
             out_dic = dict(js["output"][1].items())
         else:
             # for no reference case (e.g., speech translation)
