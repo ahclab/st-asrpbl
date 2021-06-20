@@ -37,7 +37,9 @@ from espnet.utils.dataset import ChainerDataLoader
 from espnet.utils.dataset import TransformDataset
 from espnet.utils.deterministic_utils import set_deterministic_pytorch
 from espnet.utils.dynamic_import import dynamic_import
-from espnet.utils.io_utils import LoadInputsAndTargets
+# [ADD]
+# from espnet.utils.io_utils import LoadInputsAndTargets
+from espnet.utils.io_utils_add_uttlist import LoadInputsAndTargets
 from espnet.utils.training.batchfy import make_batchset
 from espnet.utils.training.iterators import ShufflingEnabler
 from espnet.utils.training.tensorboard_logger import TensorboardLogger
@@ -88,7 +90,8 @@ class CustomConverter(ASRCustomConverter):
         """
         # batch should be located in list
         assert len(batch) == 1
-        xs, ys, ys_src = batch[0]
+        # [ADD] uttid_list
+        xs, ys, ys_src, uttid_list = batch[0]
 
         # get batch of lengths of input sequences
         ilens = np.array([x.shape[0] for x in xs])
@@ -111,7 +114,7 @@ class CustomConverter(ASRCustomConverter):
         else:
             ys_pad_src = None
 
-        return xs_pad, ilens, ys_pad, ys_pad_src
+        return xs_pad, ilens, ys_pad, ys_pad_src, uttid_list
 
 
 def train(args):
@@ -145,7 +148,7 @@ def train(args):
     assert isinstance(model, STInterface)
 
     if args.rnnlm is not None:
-        rnnlm_args = get_model_conf(args.rnnlm, args.rnnlm_conf)
+        rnnlm_args = get_(args.rnnlm, args.rnnlm_conf)
         rnnlm = lm_pytorch.ClassifierWithState(
             lm_pytorch.RNNLM(len(args.char_list), rnnlm_args.layer, rnnlm_args.unit)
         )
