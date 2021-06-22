@@ -164,6 +164,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-asr-mulenc">espnet.nets.pytorch_backend.e2e_asr_mulenc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-asr-mix">espnet.nets.pytorch_backend.e2e_asr_mix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-asr-conformer">espnet.nets.pytorch_backend.e2e_asr_conformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-st-transformer-asrpbl">espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-asr-transducer">espnet.nets.pytorch_backend.e2e_asr_transducer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-tts-transformer">espnet.nets.pytorch_backend.e2e_tts_transformer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-init">espnet.nets.pytorch_backend.__init__</a></li>
@@ -177,6 +178,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-mt">espnet.nets.pytorch_backend.e2e_mt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-st-transformer">espnet.nets.pytorch_backend.e2e_st_transformer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-mt-transformer">espnet.nets.pytorch_backend.e2e_mt_transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-asr-transformer-pre-decoding">espnet.nets.pytorch_backend.e2e_asr_transformer_pre_decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-vc-tacotron2">espnet.nets.pytorch_backend.e2e_vc_tacotron2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-asr-transformer">espnet.nets.pytorch_backend.e2e_asr_transformer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-e2e-st-conformer">espnet.nets.pytorch_backend.e2e_st_conformer</a></li>
@@ -234,6 +236,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-lightconv">espnet.nets.pytorch_backend.transformer.lightconv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-dynamic-conv">espnet.nets.pytorch_backend.transformer.dynamic_conv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-multi-layer-conv">espnet.nets.pytorch_backend.transformer.multi_layer_conv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-posterior-based-loss">espnet.nets.pytorch_backend.transformer.posterior_based_loss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-positionwise-feed-forward">espnet.nets.pytorch_backend.transformer.positionwise_feed_forward</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-label-smoothing-loss">espnet.nets.pytorch_backend.transformer.label_smoothing_loss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-nets-pytorch-backend-transformer-contextual-block-encoder-layer">espnet.nets.pytorch_backend.transformer.contextual_block_encoder_layer</a></li>
@@ -6200,8 +6203,258 @@ Refer to: <a class="reference external" href="https://arxiv.org/abs/2005.08100">
 </dd></dl>
 
 </div>
+<div class="section" id="espnet-nets-pytorch-backend-e2e-st-transformer-asrpbl">
+<span id="id53"></span><h2>espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-st-transformer-asrpbl" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl"></span><p>Transformer speech recognition model (pytorch).</p>
+<dl class="class">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.</code><code class="sig-name descname">E2E</code><span class="sig-paren">(</span><em class="sig-param">idim</em>, <em class="sig-param">odim</em>, <em class="sig-param">args</em>, <em class="sig-param">ignore_id=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#espnet.nets.st_interface.STInterface" title="espnet.nets.st_interface.STInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">espnet.nets.st_interface.STInterface</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>E2E module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idim</strong> (<em>int</em>) – dimension of inputs</p></li>
+<li><p><strong>odim</strong> (<em>int</em>) – dimension of outputs</p></li>
+<li><p><strong>args</strong> (<em>Namespace</em>) – argument Namespace containing options</p></li>
+</ul>
+</dd>
+</dl>
+<p>Construct an E2E object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idim</strong> (<em>int</em>) – dimension of inputs</p></li>
+<li><p><strong>odim</strong> (<em>int</em>) – dimension of outputs</p></li>
+<li><p><strong>args</strong> (<em>Namespace</em>) – argument Namespace containing options</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.add_arguments">
+<em class="property">static </em><code class="sig-name descname">add_arguments</code><span class="sig-paren">(</span><em class="sig-param">parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.add_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.add_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add arguments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.attention_plot_class">
+<em class="property">property </em><code class="sig-name descname">attention_plot_class</code><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.attention_plot_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return PlotAttentionReport.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.calculate_all_attentions">
+<code class="sig-name descname">calculate_all_attentions</code><span class="sig-paren">(</span><em class="sig-param">xs_pad</em>, <em class="sig-param">ilens</em>, <em class="sig-param">ys_pad</em>, <em class="sig-param">ys_pad_src</em>, <em class="sig-param">uttid_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.calculate_all_attentions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.calculate_all_attentions" title="Permalink to this definition">¶</a></dt>
+<dd><p>E2E attention calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xs_pad</strong> (<em>torch.Tensor</em>) – batch of padded input sequences (B, Tmax, idim)</p></li>
+<li><p><strong>ilens</strong> (<em>torch.Tensor</em>) – batch of lengths of input sequences (B)</p></li>
+<li><p><strong>ys_pad</strong> (<em>torch.Tensor</em>) – batch of padded token id sequence tensor (B, Lmax)</p></li>
+<li><p><strong>ys_pad_src</strong> (<em>torch.Tensor</em>) – batch of padded token id sequence tensor (B, Lmax)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>attention weights (B, H, Lmax, Tmax)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.calculate_all_ctc_probs">
+<code class="sig-name descname">calculate_all_ctc_probs</code><span class="sig-paren">(</span><em class="sig-param">xs_pad</em>, <em class="sig-param">ilens</em>, <em class="sig-param">ys_pad</em>, <em class="sig-param">ys_pad_src</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.calculate_all_ctc_probs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.calculate_all_ctc_probs" title="Permalink to this definition">¶</a></dt>
+<dd><p>E2E CTC probability calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xs_pad</strong> (<em>torch.Tensor</em>) – batch of padded input sequences (B, Tmax)</p></li>
+<li><p><strong>ilens</strong> (<em>torch.Tensor</em>) – batch of lengths of input sequences (B)</p></li>
+<li><p><strong>ys_pad</strong> (<em>torch.Tensor</em>) – batch of padded token id sequence tensor (B, Lmax)</p></li>
+<li><p><strong>ys_pad_src</strong> (<em>torch.Tensor</em>) – batch of padded token id sequence tensor (B, Lmax)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>CTC probability (B, Tmax, vocab)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.encode">
+<code class="sig-name descname">encode</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.encode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode source acoustic features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>ndarray</em>) – source acoustic feature (T, D)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encoder outputs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">xs_pad</em>, <em class="sig-param">ilens</em>, <em class="sig-param">ys_pad</em>, <em class="sig-param">ys_pad_src</em>, <em class="sig-param">uttid_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>E2E forward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xs_pad</strong> (<em>torch.Tensor</em>) – batch of padded source sequences (B, Tmax, idim)</p></li>
+<li><p><strong>ilens</strong> (<em>torch.Tensor</em>) – batch of lengths of source sequences (B)</p></li>
+<li><p><strong>ys_pad</strong> (<em>torch.Tensor</em>) – batch of padded target sequences (B, Lmax)</p></li>
+<li><p><strong>ys_pad_src</strong> (<em>torch.Tensor</em>) – batch of padded target sequences (B, Lmax)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ctc loss value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>attention loss value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>accuracy in attention decoder</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.forward_asr">
+<code class="sig-name descname">forward_asr</code><span class="sig-paren">(</span><em class="sig-param">hs_pad</em>, <em class="sig-param">hs_mask</em>, <em class="sig-param">ys_pad</em>, <em class="sig-param">hyps_list</em>, <em class="sig-param">sentences_scores_list</em>, <em class="sig-param">soft_tgt_weight</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.forward_asr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.forward_asr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass in the auxiliary ASR task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hs_pad</strong> (<em>torch.Tensor</em>) – batch of padded source sequences (B, Tmax, idim)</p></li>
+<li><p><strong>hs_mask</strong> (<em>torch.Tensor</em>) – batch of input token mask (B, Lmax)</p></li>
+<li><p><strong>ys_pad</strong> (<em>torch.Tensor</em>) – batch of padded target sequences (B, Lmax)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ASR attention loss value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>accuracy in ASR attention decoder</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ASR CTC loss value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>character error rate from CTC prediction</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>character error rate from attetion decoder prediction</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>word error rate from attetion decoder prediction</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.forward_mt">
+<code class="sig-name descname">forward_mt</code><span class="sig-paren">(</span><em class="sig-param">xs_pad</em>, <em class="sig-param">ys_in_pad</em>, <em class="sig-param">ys_out_pad</em>, <em class="sig-param">ys_mask</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.forward_mt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.forward_mt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward pass in the auxiliary MT task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xs_pad</strong> (<em>torch.Tensor</em>) – batch of padded source sequences (B, Tmax, idim)</p></li>
+<li><p><strong>ys_in_pad</strong> (<em>torch.Tensor</em>) – batch of padded target sequences (B, Lmax)</p></li>
+<li><p><strong>ys_out_pad</strong> (<em>torch.Tensor</em>) – batch of padded target sequences (B, Lmax)</p></li>
+<li><p><strong>ys_mask</strong> (<em>torch.Tensor</em>) – batch of input token mask (B, Lmax)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MT loss value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>accuracy in MT decoder</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.reset_parameters">
+<code class="sig-name descname">reset_parameters</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.reset_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.reset_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.scorers">
+<code class="sig-name descname">scorers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.scorers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.scorers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scorers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.translate">
+<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">trans_args</em>, <em class="sig-param">char_list=None</em>, <em class="sig-param">rnnlm=None</em>, <em class="sig-param">use_jit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_st_transformer_asrpbl.html#E2E.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl.E2E.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate input speech.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>ndnarray</em>) – input acoustic feature (B, T, D) or (T, D)</p></li>
+<li><p><strong>trans_args</strong> (<em>Namespace</em>) – argment Namespace contraining options</p></li>
+<li><p><strong>char_list</strong> (<em>list</em>) – list of characters</p></li>
+<li><p><strong>rnnlm</strong> (<em>torch.nn.Module</em>) – language model module</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>N-best decoding results</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-asr-transducer">
-<span id="id53"></span><h2>espnet.nets.pytorch_backend.e2e_asr_transducer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-transducer" title="Permalink to this headline">¶</a></h2>
+<span id="id54"></span><h2>espnet.nets.pytorch_backend.e2e_asr_transducer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-transducer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_asr_transducer"></span><p>Transducer speech recognition model (pytorch).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_asr_transducer.E2E">
@@ -6423,7 +6676,7 @@ Refer to: <a class="reference external" href="https://arxiv.org/abs/2005.08100">
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-tts-transformer">
-<span id="id54"></span><h2>espnet.nets.pytorch_backend.e2e_tts_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-tts-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id55"></span><h2>espnet.nets.pytorch_backend.e2e_tts_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-tts-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_tts_transformer"></span><p>TTS-Transformer related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_tts_transformer.GuidedMultiHeadAttentionLoss">
@@ -6763,11 +7016,11 @@ Tensor: Encoder-decoder (source) attention weights (#layers, #heads, L, T).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-init">
-<span id="id55"></span><h2>espnet.nets.pytorch_backend.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-init" title="Permalink to this headline">¶</a></h2>
+<span id="id56"></span><h2>espnet.nets.pytorch_backend.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-wavenet">
-<span id="id56"></span><h2>espnet.nets.pytorch_backend.wavenet<a class="headerlink" href="#espnet-nets-pytorch-backend-wavenet" title="Permalink to this headline">¶</a></h2>
+<span id="id57"></span><h2>espnet.nets.pytorch_backend.wavenet<a class="headerlink" href="#espnet-nets-pytorch-backend-wavenet" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.wavenet"></span><p>This code is based on <a class="reference external" href="https://github.com/kan-bayashi/PytorchWaveNetVocoder">https://github.com/kan-bayashi/PytorchWaveNetVocoder</a>.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.wavenet.CausalConv1d">
@@ -6970,7 +7223,7 @@ Tensor: Encoder-decoder (source) attention weights (#layers, #heads, L, T).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-vc-transformer">
-<span id="id57"></span><h2>espnet.nets.pytorch_backend.e2e_vc_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-vc-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id58"></span><h2>espnet.nets.pytorch_backend.e2e_vc_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-vc-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_vc_transformer"></span><p>Voice Transformer Network (Transformer-VC) related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_vc_transformer.Transformer">
@@ -7249,7 +7502,7 @@ Tensor: Encoder-decoder (source) attention weights (#layers, #heads, L, T).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-asr-mix-transformer">
-<span id="id58"></span><h2>espnet.nets.pytorch_backend.e2e_asr_mix_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-mix-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id59"></span><h2>espnet.nets.pytorch_backend.e2e_asr_mix_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-mix-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_asr_mix_transformer"></span><p>Transformer speech recognition model for single-channel multi-speaker mixture speech.</p>
 <dl class="simple">
 <dt>It is a fusion of <cite>e2e_asr_mix.py</cite> and <cite>e2e_asr_transformer.py</cite>. Refer to:</dt><dd><p><a class="reference external" href="https://arxiv.org/pdf/2002.03921.pdf">https://arxiv.org/pdf/2002.03921.pdf</a></p>
@@ -7400,7 +7653,7 @@ Tensor: Encoder-decoder (source) attention weights (#layers, #heads, L, T).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-tts-tacotron2">
-<span id="id59"></span><h2>espnet.nets.pytorch_backend.e2e_tts_tacotron2<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-tts-tacotron2" title="Permalink to this headline">¶</a></h2>
+<span id="id60"></span><h2>espnet.nets.pytorch_backend.e2e_tts_tacotron2<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-tts-tacotron2" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_tts_tacotron2"></span><p>Tacotron 2 related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_tts_tacotron2.GuidedAttentionLoss">
@@ -7696,7 +7949,7 @@ Tensor: Binary cross entropy loss value.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-initialization">
-<span id="id60"></span><h2>espnet.nets.pytorch_backend.initialization<a class="headerlink" href="#espnet-nets-pytorch-backend-initialization" title="Permalink to this headline">¶</a></h2>
+<span id="id61"></span><h2>espnet.nets.pytorch_backend.initialization<a class="headerlink" href="#espnet-nets-pytorch-backend-initialization" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.initialization"></span><p>Initialization functions for RNN sequence-to-sequence models.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.initialization.lecun_normal_init_parameters">
@@ -7718,7 +7971,7 @@ Tensor: Binary cross entropy loss value.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-tts-fastspeech">
-<span id="id61"></span><h2>espnet.nets.pytorch_backend.e2e_tts_fastspeech<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-tts-fastspeech" title="Permalink to this headline">¶</a></h2>
+<span id="id62"></span><h2>espnet.nets.pytorch_backend.e2e_tts_fastspeech<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-tts-fastspeech" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_tts_fastspeech"></span><p>FastSpeech related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_tts_fastspeech.FeedForwardTransformer">
@@ -7991,7 +8244,7 @@ Tensor: Duration predictor loss value.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-asr">
-<span id="id62"></span><h2>espnet.nets.pytorch_backend.e2e_asr<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr" title="Permalink to this headline">¶</a></h2>
+<span id="id63"></span><h2>espnet.nets.pytorch_backend.e2e_asr<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_asr"></span><p>RNN sequence-to-sequence speech recognition model (pytorch).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_asr.E2E">
@@ -8230,7 +8483,7 @@ however, there are two exceptions as far as I know.
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-mt">
-<span id="id63"></span><h2>espnet.nets.pytorch_backend.e2e_mt<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-mt" title="Permalink to this headline">¶</a></h2>
+<span id="id64"></span><h2>espnet.nets.pytorch_backend.e2e_mt<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-mt" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_mt"></span><p>RNN sequence-to-sequence text translation model (pytorch).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_mt.E2E">
@@ -8425,7 +8678,7 @@ however, there are two exceptions as far as I know.
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-st-transformer">
-<span id="id64"></span><h2>espnet.nets.pytorch_backend.e2e_st_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-st-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id65"></span><h2>espnet.nets.pytorch_backend.e2e_st_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-st-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_st_transformer"></span><p>Transformer speech recognition model (pytorch).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_st_transformer.E2E">
@@ -8680,7 +8933,7 @@ however, there are two exceptions as far as I know.
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-mt-transformer">
-<span id="id65"></span><h2>espnet.nets.pytorch_backend.e2e_mt_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-mt-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id66"></span><h2>espnet.nets.pytorch_backend.e2e_mt_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-mt-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_mt_transformer"></span><p>Transformer text translation model (pytorch).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_mt_transformer.E2E">
@@ -8841,8 +9094,11 @@ however, there are two exceptions as far as I know.
 </dd></dl>
 
 </div>
+<div class="section" id="espnet-nets-pytorch-backend-e2e-asr-transformer-pre-decoding">
+<span id="id67"></span><h2>espnet.nets.pytorch_backend.e2e_asr_transformer_pre_decoding<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-transformer-pre-decoding" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-vc-tacotron2">
-<span id="id66"></span><h2>espnet.nets.pytorch_backend.e2e_vc_tacotron2<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-vc-tacotron2" title="Permalink to this headline">¶</a></h2>
+<span id="id68"></span><h2>espnet.nets.pytorch_backend.e2e_vc_tacotron2<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-vc-tacotron2" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_vc_tacotron2"></span><p>Tacotron2-VC related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_vc_tacotron2.Tacotron2">
@@ -9046,7 +9302,7 @@ Tensor: Attention weights (L, T).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-asr-transformer">
-<span id="id67"></span><h2>espnet.nets.pytorch_backend.e2e_asr_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id69"></span><h2>espnet.nets.pytorch_backend.e2e_asr_transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-asr-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_asr_transformer"></span><p>Transformer speech recognition model (pytorch).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.e2e_asr_transformer.E2E">
@@ -9205,6 +9461,28 @@ Tensor: Attention weights (L, T).</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="espnet.nets.pytorch_backend.e2e_asr_transformer.E2E.recognize_pre_decoding">
+<code class="sig-name descname">recognize_pre_decoding</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">recog_args</em>, <em class="sig-param">char_list=None</em>, <em class="sig-param">rnnlm=None</em>, <em class="sig-param">use_jit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_asr_transformer.html#E2E.recognize_pre_decoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_asr_transformer.E2E.recognize_pre_decoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recognize input speech.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>ndnarray</em>) – input acoustic feature (B, T, D) or (T, D)</p></li>
+<li><p><strong>recog_args</strong> (<em>Namespace</em>) – argment Namespace contraining options</p></li>
+<li><p><strong>char_list</strong> (<em>list</em>) – list of characters</p></li>
+<li><p><strong>rnnlm</strong> (<em>torch.nn.Module</em>) – language model module</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>N-best decoding results</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="espnet.nets.pytorch_backend.e2e_asr_transformer.E2E.reset_parameters">
 <code class="sig-name descname">reset_parameters</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/e2e_asr_transformer.html#E2E.reset_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.e2e_asr_transformer.E2E.reset_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize parameters.</p>
@@ -9220,7 +9498,7 @@ Tensor: Attention weights (L, T).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-e2e-st-conformer">
-<span id="id68"></span><h2>espnet.nets.pytorch_backend.e2e_st_conformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-st-conformer" title="Permalink to this headline">¶</a></h2>
+<span id="id70"></span><h2>espnet.nets.pytorch_backend.e2e_st_conformer<a class="headerlink" href="#espnet-nets-pytorch-backend-e2e-st-conformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.e2e_st_conformer"></span><p>Conformer speech translation model (pytorch).</p>
 <p>It is a fusion of <cite>e2e_st_transformer.py</cite>
 Refer to: <a class="reference external" href="https://arxiv.org/abs/2005.08100">https://arxiv.org/abs/2005.08100</a></p>
@@ -9264,14 +9542,14 @@ Refer to: <a class="reference external" href="https://arxiv.org/abs/2005.08100">
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-gtn-ctc">
-<span id="id69"></span><h2>espnet.nets.pytorch_backend.gtn_ctc<a class="headerlink" href="#espnet-nets-pytorch-backend-gtn-ctc" title="Permalink to this headline">¶</a></h2>
+<span id="id71"></span><h2>espnet.nets.pytorch_backend.gtn_ctc<a class="headerlink" href="#espnet-nets-pytorch-backend-gtn-ctc" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-init">
-<span id="id70"></span><h2>espnet.nets.pytorch_backend.frontends.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-init" title="Permalink to this headline">¶</a></h2>
+<span id="id72"></span><h2>espnet.nets.pytorch_backend.frontends.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-dnn-wpe">
-<span id="id71"></span><h2>espnet.nets.pytorch_backend.frontends.dnn_wpe<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-dnn-wpe" title="Permalink to this headline">¶</a></h2>
+<span id="id73"></span><h2>espnet.nets.pytorch_backend.frontends.dnn_wpe<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-dnn-wpe" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.dnn_wpe"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.frontends.dnn_wpe.DNN_WPE">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.frontends.dnn_wpe.</code><code class="sig-name descname">DNN_WPE</code><span class="sig-paren">(</span><em class="sig-param">wtype: str = 'blstmp'</em>, <em class="sig-param">widim: int = 257</em>, <em class="sig-param">wlayers: int = 3</em>, <em class="sig-param">wunits: int = 300</em>, <em class="sig-param">wprojs: int = 320</em>, <em class="sig-param">dropout_rate: float = 0.0</em>, <em class="sig-param">taps: int = 5</em>, <em class="sig-param">delay: int = 3</em>, <em class="sig-param">use_dnn_mask: bool = True</em>, <em class="sig-param">iterations: int = 1</em>, <em class="sig-param">normalization: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/frontends/dnn_wpe.html#DNN_WPE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.frontends.dnn_wpe.DNN_WPE" title="Permalink to this definition">¶</a></dt>
@@ -9308,7 +9586,7 @@ ilens: (B,)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-feature-transform">
-<span id="id72"></span><h2>espnet.nets.pytorch_backend.frontends.feature_transform<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-feature-transform" title="Permalink to this headline">¶</a></h2>
+<span id="id74"></span><h2>espnet.nets.pytorch_backend.frontends.feature_transform<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-feature-transform" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.feature_transform"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.frontends.feature_transform.FeatureTransform">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.frontends.feature_transform.</code><code class="sig-name descname">FeatureTransform</code><span class="sig-paren">(</span><em class="sig-param">fs: int = 16000</em>, <em class="sig-param">n_fft: int = 512</em>, <em class="sig-param">n_mels: int = 80</em>, <em class="sig-param">fmin: float = 0.0</em>, <em class="sig-param">fmax: float = None</em>, <em class="sig-param">stats_file: str = None</em>, <em class="sig-param">apply_uttmvn: bool = True</em>, <em class="sig-param">uttmvn_norm_means: bool = True</em>, <em class="sig-param">uttmvn_norm_vars: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/frontends/feature_transform.html#FeatureTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.frontends.feature_transform.FeatureTransform" title="Permalink to this definition">¶</a></dt>
@@ -9474,7 +9752,7 @@ registered hooks while the latter silently ignores them.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-frontend">
-<span id="id73"></span><h2>espnet.nets.pytorch_backend.frontends.frontend<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-frontend" title="Permalink to this headline">¶</a></h2>
+<span id="id75"></span><h2>espnet.nets.pytorch_backend.frontends.frontend<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-frontend" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.frontend"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.frontends.frontend.Frontend">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.frontends.frontend.</code><code class="sig-name descname">Frontend</code><span class="sig-paren">(</span><em class="sig-param">idim: int</em>, <em class="sig-param">use_wpe: bool = False</em>, <em class="sig-param">wtype: str = 'blstmp'</em>, <em class="sig-param">wlayers: int = 3</em>, <em class="sig-param">wunits: int = 300</em>, <em class="sig-param">wprojs: int = 320</em>, <em class="sig-param">wdropout_rate: float = 0.0</em>, <em class="sig-param">taps: int = 5</em>, <em class="sig-param">delay: int = 3</em>, <em class="sig-param">use_dnn_mask_for_wpe: bool = True</em>, <em class="sig-param">use_beamformer: bool = False</em>, <em class="sig-param">btype: str = 'blstmp'</em>, <em class="sig-param">blayers: int = 3</em>, <em class="sig-param">bunits: int = 300</em>, <em class="sig-param">bprojs: int = 320</em>, <em class="sig-param">bnmask: int = 2</em>, <em class="sig-param">badim: int = 320</em>, <em class="sig-param">ref_channel: int = -1</em>, <em class="sig-param">bdropout_rate=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/frontends/frontend.html#Frontend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.frontends.frontend.Frontend" title="Permalink to this definition">¶</a></dt>
@@ -9502,7 +9780,7 @@ registered hooks while the latter silently ignores them.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-dnn-beamformer">
-<span id="id74"></span><h2>espnet.nets.pytorch_backend.frontends.dnn_beamformer<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-dnn-beamformer" title="Permalink to this headline">¶</a></h2>
+<span id="id76"></span><h2>espnet.nets.pytorch_backend.frontends.dnn_beamformer<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-dnn-beamformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.dnn_beamformer"></span><p>DNN beamformer module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.frontends.dnn_beamformer.AttentionReference">
@@ -9574,7 +9852,7 @@ ilens (torch.Tensor): (B,)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-beamformer">
-<span id="id75"></span><h2>espnet.nets.pytorch_backend.frontends.beamformer<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-beamformer" title="Permalink to this headline">¶</a></h2>
+<span id="id77"></span><h2>espnet.nets.pytorch_backend.frontends.beamformer<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-beamformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.beamformer"></span><dl class="function">
 <dt id="espnet.nets.pytorch_backend.frontends.beamformer.apply_beamforming_vector">
 <code class="sig-prename descclassname">espnet.nets.pytorch_backend.frontends.beamformer.</code><code class="sig-name descname">apply_beamforming_vector</code><span class="sig-paren">(</span><em class="sig-param">beamform_vector: torch_complex.tensor.ComplexTensor</em>, <em class="sig-param">mix: torch_complex.tensor.ComplexTensor</em><span class="sig-paren">)</span> &#x2192; torch_complex.tensor.ComplexTensor<a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/frontends/beamformer.html#apply_beamforming_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.frontends.beamformer.apply_beamforming_vector" title="Permalink to this definition">¶</a></dt>
@@ -9633,7 +9911,7 @@ for noise reduction; M. Souden et al., 2010;
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-frontends-mask-estimator">
-<span id="id76"></span><h2>espnet.nets.pytorch_backend.frontends.mask_estimator<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-mask-estimator" title="Permalink to this headline">¶</a></h2>
+<span id="id78"></span><h2>espnet.nets.pytorch_backend.frontends.mask_estimator<a class="headerlink" href="#espnet-nets-pytorch-backend-frontends-mask-estimator" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.frontends.mask_estimator"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.frontends.mask_estimator.MaskEstimator">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.frontends.mask_estimator.</code><code class="sig-name descname">MaskEstimator</code><span class="sig-paren">(</span><em class="sig-param">type</em>, <em class="sig-param">idim</em>, <em class="sig-param">layers</em>, <em class="sig-param">units</em>, <em class="sig-param">projs</em>, <em class="sig-param">dropout</em>, <em class="sig-param">nmask=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/frontends/mask_estimator.html#MaskEstimator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.frontends.mask_estimator.MaskEstimator" title="Permalink to this definition">¶</a></dt>
@@ -9664,11 +9942,11 @@ ilens: (B,)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-fastspeech-init">
-<span id="id77"></span><h2>espnet.nets.pytorch_backend.fastspeech.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-init" title="Permalink to this headline">¶</a></h2>
+<span id="id79"></span><h2>espnet.nets.pytorch_backend.fastspeech.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.fastspeech.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-fastspeech-length-regulator">
-<span id="id78"></span><h2>espnet.nets.pytorch_backend.fastspeech.length_regulator<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-length-regulator" title="Permalink to this headline">¶</a></h2>
+<span id="id80"></span><h2>espnet.nets.pytorch_backend.fastspeech.length_regulator<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-length-regulator" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.fastspeech.length_regulator"></span><p>Length regulator related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.fastspeech.length_regulator.LengthRegulator">
@@ -9711,7 +9989,7 @@ feature based on the corresponding predicted durations.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-fastspeech-duration-predictor">
-<span id="id80"></span><h2>espnet.nets.pytorch_backend.fastspeech.duration_predictor<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-duration-predictor" title="Permalink to this headline">¶</a></h2>
+<span id="id82"></span><h2>espnet.nets.pytorch_backend.fastspeech.duration_predictor<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-duration-predictor" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.fastspeech.duration_predictor"></span><p>Duration predictor related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.fastspeech.duration_predictor.DurationPredictor">
@@ -9827,7 +10105,7 @@ those are calculated in linear domain.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-fastspeech-duration-calculator">
-<span id="id82"></span><h2>espnet.nets.pytorch_backend.fastspeech.duration_calculator<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-duration-calculator" title="Permalink to this headline">¶</a></h2>
+<span id="id84"></span><h2>espnet.nets.pytorch_backend.fastspeech.duration_calculator<a class="headerlink" href="#espnet-nets-pytorch-backend-fastspeech-duration-calculator" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.fastspeech.duration_calculator"></span><p>Duration calculator related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.fastspeech.duration_calculator.DurationCalculator">
@@ -9867,7 +10145,7 @@ those are calculated in linear domain.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-rnn-argument">
-<span id="id84"></span><h2>espnet.nets.pytorch_backend.rnn.argument<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-argument" title="Permalink to this headline">¶</a></h2>
+<span id="id86"></span><h2>espnet.nets.pytorch_backend.rnn.argument<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-argument" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.rnn.argument"></span><p>Conformer common arguments.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.rnn.argument.add_arguments_rnn_attention_common">
@@ -9889,11 +10167,11 @@ those are calculated in linear domain.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-rnn-init">
-<span id="id85"></span><h2>espnet.nets.pytorch_backend.rnn.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-init" title="Permalink to this headline">¶</a></h2>
+<span id="id87"></span><h2>espnet.nets.pytorch_backend.rnn.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.rnn.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-rnn-attentions">
-<span id="id86"></span><h2>espnet.nets.pytorch_backend.rnn.attentions<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-attentions" title="Permalink to this headline">¶</a></h2>
+<span id="id88"></span><h2>espnet.nets.pytorch_backend.rnn.attentions<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-attentions" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.rnn.attentions"></span><p>Attention modules for RNN.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.rnn.attentions.AttAdd">
@@ -10765,7 +11043,7 @@ and not store pre_compute_k and pre_compute_v</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-rnn-decoders">
-<span id="id87"></span><h2>espnet.nets.pytorch_backend.rnn.decoders<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-decoders" title="Permalink to this headline">¶</a></h2>
+<span id="id89"></span><h2>espnet.nets.pytorch_backend.rnn.decoders<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-decoders" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.rnn.decoders"></span><p>RNN decoder module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.rnn.decoders.Decoder">
@@ -10956,7 +11234,7 @@ and next state for ys</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-rnn-encoders">
-<span id="id88"></span><h2>espnet.nets.pytorch_backend.rnn.encoders<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-encoders" title="Permalink to this headline">¶</a></h2>
+<span id="id90"></span><h2>espnet.nets.pytorch_backend.rnn.encoders<a class="headerlink" href="#espnet-nets-pytorch-backend-rnn-encoders" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.rnn.encoders"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.rnn.encoders.Encoder">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.rnn.encoders.</code><code class="sig-name descname">Encoder</code><span class="sig-paren">(</span><em class="sig-param">etype</em>, <em class="sig-param">idim</em>, <em class="sig-param">elayers</em>, <em class="sig-param">eunits</em>, <em class="sig-param">eprojs</em>, <em class="sig-param">subsample</em>, <em class="sig-param">dropout</em>, <em class="sig-param">in_channel=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/rnn/encoders.html#Encoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.rnn.encoders.Encoder" title="Permalink to this definition">¶</a></dt>
@@ -11144,7 +11422,7 @@ List of subsample factors of each encoder.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-streaming-window">
-<span id="id89"></span><h2>espnet.nets.pytorch_backend.streaming.window<a class="headerlink" href="#espnet-nets-pytorch-backend-streaming-window" title="Permalink to this headline">¶</a></h2>
+<span id="id91"></span><h2>espnet.nets.pytorch_backend.streaming.window<a class="headerlink" href="#espnet-nets-pytorch-backend-streaming-window" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.streaming.window"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.streaming.window.WindowStreamingE2E">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.streaming.window.</code><code class="sig-name descname">WindowStreamingE2E</code><span class="sig-paren">(</span><em class="sig-param">e2e</em>, <em class="sig-param">recog_args</em>, <em class="sig-param">rnnlm=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/streaming/window.html#WindowStreamingE2E"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.streaming.window.WindowStreamingE2E" title="Permalink to this definition">¶</a></dt>
@@ -11179,11 +11457,11 @@ and online implementation of the previous layers.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-streaming-init">
-<span id="id90"></span><h2>espnet.nets.pytorch_backend.streaming.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-streaming-init" title="Permalink to this headline">¶</a></h2>
+<span id="id92"></span><h2>espnet.nets.pytorch_backend.streaming.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-streaming-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.streaming.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-streaming-segment">
-<span id="id91"></span><h2>espnet.nets.pytorch_backend.streaming.segment<a class="headerlink" href="#espnet-nets-pytorch-backend-streaming-segment" title="Permalink to this headline">¶</a></h2>
+<span id="id93"></span><h2>espnet.nets.pytorch_backend.streaming.segment<a class="headerlink" href="#espnet-nets-pytorch-backend-streaming-segment" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.streaming.segment"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.streaming.segment.SegmentStreamingE2E">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.streaming.segment.</code><code class="sig-name descname">SegmentStreamingE2E</code><span class="sig-paren">(</span><em class="sig-param">e2e</em>, <em class="sig-param">recog_args</em>, <em class="sig-param">rnnlm=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/streaming/segment.html#SegmentStreamingE2E"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.streaming.segment.SegmentStreamingE2E" title="Permalink to this definition">¶</a></dt>
@@ -11207,11 +11485,11 @@ and online implementation of the previous layers.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-tacotron2-init">
-<span id="id92"></span><h2>espnet.nets.pytorch_backend.tacotron2.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-init" title="Permalink to this headline">¶</a></h2>
+<span id="id94"></span><h2>espnet.nets.pytorch_backend.tacotron2.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.tacotron2.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-tacotron2-encoder">
-<span id="id93"></span><h2>espnet.nets.pytorch_backend.tacotron2.encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-encoder" title="Permalink to this headline">¶</a></h2>
+<span id="id95"></span><h2>espnet.nets.pytorch_backend.tacotron2.encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-encoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.tacotron2.encoder"></span><p>Tacotron2 encoder related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.tacotron2.encoder.Encoder">
@@ -11291,7 +11569,7 @@ or acoustic feature (T, idim * encoder_reduction_factor).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-tacotron2-cbhg">
-<span id="id95"></span><h2>espnet.nets.pytorch_backend.tacotron2.cbhg<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-cbhg" title="Permalink to this headline">¶</a></h2>
+<span id="id97"></span><h2>espnet.nets.pytorch_backend.tacotron2.cbhg<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-cbhg" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.tacotron2.cbhg"></span><p>CBHG related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.tacotron2.cbhg.CBHG">
@@ -11425,7 +11703,7 @@ Tensor: Mean square error loss value.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-tacotron2-decoder">
-<span id="id96"></span><h2>espnet.nets.pytorch_backend.tacotron2.decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-decoder" title="Permalink to this headline">¶</a></h2>
+<span id="id98"></span><h2>espnet.nets.pytorch_backend.tacotron2.decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-tacotron2-decoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.tacotron2.decoder"></span><p>Tacotron2 decoder related modules.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.tacotron2.decoder.Decoder">
@@ -11704,7 +11982,7 @@ e.g. <cite>torch.nn.Module.LSTMCell</cite>.</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-conformer-argument">
-<span id="id100"></span><h2>espnet.nets.pytorch_backend.conformer.argument<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-argument" title="Permalink to this headline">¶</a></h2>
+<span id="id102"></span><h2>espnet.nets.pytorch_backend.conformer.argument<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-argument" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.conformer.argument"></span><p>Conformer common arguments.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.conformer.argument.add_arguments_conformer_common">
@@ -11731,11 +12009,11 @@ e.g. <cite>torch.nn.Module.LSTMCell</cite>.</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-conformer-init">
-<span id="id101"></span><h2>espnet.nets.pytorch_backend.conformer.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-init" title="Permalink to this headline">¶</a></h2>
+<span id="id103"></span><h2>espnet.nets.pytorch_backend.conformer.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.conformer.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-conformer-swish">
-<span id="id102"></span><h2>espnet.nets.pytorch_backend.conformer.swish<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-swish" title="Permalink to this headline">¶</a></h2>
+<span id="id104"></span><h2>espnet.nets.pytorch_backend.conformer.swish<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-swish" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.conformer.swish"></span><p>Swish() activation function for Conformer.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.conformer.swish.Swish">
@@ -11753,7 +12031,7 @@ e.g. <cite>torch.nn.Module.LSTMCell</cite>.</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-conformer-encoder">
-<span id="id103"></span><h2>espnet.nets.pytorch_backend.conformer.encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-encoder" title="Permalink to this headline">¶</a></h2>
+<span id="id105"></span><h2>espnet.nets.pytorch_backend.conformer.encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-encoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.conformer.encoder"></span><p>Encoder definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.conformer.encoder.Encoder">
@@ -11816,7 +12094,7 @@ torch.Tensor: Mask tensor (#batch, time).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-conformer-convolution">
-<span id="id104"></span><h2>espnet.nets.pytorch_backend.conformer.convolution<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-convolution" title="Permalink to this headline">¶</a></h2>
+<span id="id106"></span><h2>espnet.nets.pytorch_backend.conformer.convolution<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-convolution" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.conformer.convolution"></span><p>ConvolutionModule definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.conformer.convolution.ConvolutionModule">
@@ -11853,7 +12131,7 @@ torch.Tensor: Mask tensor (#batch, time).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-conformer-encoder-layer">
-<span id="id105"></span><h2>espnet.nets.pytorch_backend.conformer.encoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-encoder-layer" title="Permalink to this headline">¶</a></h2>
+<span id="id107"></span><h2>espnet.nets.pytorch_backend.conformer.encoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-conformer-encoder-layer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.conformer.encoder_layer"></span><p>Encoder self-attention layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.conformer.encoder_layer.EncoderLayer">
@@ -11913,7 +12191,7 @@ torch.Tensor: Mask tensor (#batch, time).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-lm-transformer">
-<span id="id106"></span><h2>espnet.nets.pytorch_backend.lm.transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-transformer" title="Permalink to this headline">¶</a></h2>
+<span id="id108"></span><h2>espnet.nets.pytorch_backend.lm.transformer<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-transformer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.lm.transformer"></span><p>Transformer language model.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.lm.transformer.TransformerLM">
@@ -12020,7 +12298,7 @@ and next state for ys</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-lm-default">
-<span id="id107"></span><h2>espnet.nets.pytorch_backend.lm.default<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-default" title="Permalink to this headline">¶</a></h2>
+<span id="id109"></span><h2>espnet.nets.pytorch_backend.lm.default<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-default" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.lm.default"></span><p>Default Recurrent Neural Network Languge Model in <cite>lm_train.py</cite>.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.lm.default.ClassifierWithState">
@@ -12252,11 +12530,11 @@ and next state for ys</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-lm-init">
-<span id="id108"></span><h2>espnet.nets.pytorch_backend.lm.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-init" title="Permalink to this headline">¶</a></h2>
+<span id="id110"></span><h2>espnet.nets.pytorch_backend.lm.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.lm.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-lm-seq-rnn">
-<span id="id109"></span><h2>espnet.nets.pytorch_backend.lm.seq_rnn<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-seq-rnn" title="Permalink to this headline">¶</a></h2>
+<span id="id111"></span><h2>espnet.nets.pytorch_backend.lm.seq_rnn<a class="headerlink" href="#espnet-nets-pytorch-backend-lm-seq-rnn" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.lm.seq_rnn"></span><p>Sequential implementation of Recurrent Neural Network Language Model.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.lm.seq_rnn.SequentialRNNLM">
@@ -12353,7 +12631,7 @@ and next state for ys</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-maskctc-mask">
-<span id="id110"></span><h2>espnet.nets.pytorch_backend.maskctc.mask<a class="headerlink" href="#espnet-nets-pytorch-backend-maskctc-mask" title="Permalink to this headline">¶</a></h2>
+<span id="id112"></span><h2>espnet.nets.pytorch_backend.maskctc.mask<a class="headerlink" href="#espnet-nets-pytorch-backend-maskctc-mask" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.maskctc.mask"></span><p>Attention masking module for Masked LM.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.maskctc.mask.square_mask">
@@ -12375,7 +12653,7 @@ and next state for ys</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-maskctc-add-mask-token">
-<span id="id111"></span><h2>espnet.nets.pytorch_backend.maskctc.add_mask_token<a class="headerlink" href="#espnet-nets-pytorch-backend-maskctc-add-mask-token" title="Permalink to this headline">¶</a></h2>
+<span id="id113"></span><h2>espnet.nets.pytorch_backend.maskctc.add_mask_token<a class="headerlink" href="#espnet-nets-pytorch-backend-maskctc-add-mask-token" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.maskctc.add_mask_token"></span><p>Token masking module for Masked LM.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.maskctc.add_mask_token.mask_uniform">
@@ -12395,11 +12673,11 @@ between one and the target sequence’s length.
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-maskctc-init">
-<span id="id112"></span><h2>espnet.nets.pytorch_backend.maskctc.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-maskctc-init" title="Permalink to this headline">¶</a></h2>
+<span id="id114"></span><h2>espnet.nets.pytorch_backend.maskctc.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-maskctc-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.maskctc.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-repeat">
-<span id="id113"></span><h2>espnet.nets.pytorch_backend.transformer.repeat<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-repeat" title="Permalink to this headline">¶</a></h2>
+<span id="id115"></span><h2>espnet.nets.pytorch_backend.transformer.repeat<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-repeat" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.repeat"></span><p>Repeat the same layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.repeat.MultiSequential">
@@ -12436,7 +12714,7 @@ between one and the target sequence’s length.
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-dynamic-conv2d">
-<span id="id114"></span><h2>espnet.nets.pytorch_backend.transformer.dynamic_conv2d<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-dynamic-conv2d" title="Permalink to this headline">¶</a></h2>
+<span id="id116"></span><h2>espnet.nets.pytorch_backend.transformer.dynamic_conv2d<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-dynamic-conv2d" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.dynamic_conv2d"></span><p>Dynamic 2-Dimentional Convolution module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.dynamic_conv2d.DynamicConvolution2D">
@@ -12486,7 +12764,7 @@ This is just for compatibility with self-attention layer (attention.py)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-embedding">
-<span id="id115"></span><h2>espnet.nets.pytorch_backend.transformer.embedding<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-embedding" title="Permalink to this headline">¶</a></h2>
+<span id="id117"></span><h2>espnet.nets.pytorch_backend.transformer.embedding<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-embedding" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.embedding"></span><p>Positional Encoding Module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.embedding.LegacyRelPositionalEncoding">
@@ -12653,7 +12931,7 @@ torch.Tensor: Positional embedding tensor (1, time, <cite>*</cite>).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-argument">
-<span id="id116"></span><h2>espnet.nets.pytorch_backend.transformer.argument<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-argument" title="Permalink to this headline">¶</a></h2>
+<span id="id118"></span><h2>espnet.nets.pytorch_backend.transformer.argument<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-argument" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.argument"></span><p>Transformer common arguments.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transformer.argument.add_arguments_transformer_common">
@@ -12663,7 +12941,7 @@ torch.Tensor: Positional embedding tensor (1, time, <cite>*</cite>).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-layer-norm">
-<span id="id117"></span><h2>espnet.nets.pytorch_backend.transformer.layer_norm<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-layer-norm" title="Permalink to this headline">¶</a></h2>
+<span id="id119"></span><h2>espnet.nets.pytorch_backend.transformer.layer_norm<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-layer-norm" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.layer_norm"></span><p>Layer normalization module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.layer_norm.LayerNorm">
@@ -12700,7 +12978,7 @@ torch.Tensor: Positional embedding tensor (1, time, <cite>*</cite>).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-mask">
-<span id="id118"></span><h2>espnet.nets.pytorch_backend.transformer.mask<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-mask" title="Permalink to this headline">¶</a></h2>
+<span id="id120"></span><h2>espnet.nets.pytorch_backend.transformer.mask<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-mask" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.mask"></span><p>Mask module.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transformer.mask.subsequent_mask">
@@ -12746,11 +13024,11 @@ torch.Tensor: Positional embedding tensor (1, time, <cite>*</cite>).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-init">
-<span id="id119"></span><h2>espnet.nets.pytorch_backend.transformer.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-init" title="Permalink to this headline">¶</a></h2>
+<span id="id121"></span><h2>espnet.nets.pytorch_backend.transformer.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-decoder-layer">
-<span id="id120"></span><h2>espnet.nets.pytorch_backend.transformer.decoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-decoder-layer" title="Permalink to this headline">¶</a></h2>
+<span id="id122"></span><h2>espnet.nets.pytorch_backend.transformer.decoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-decoder-layer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.decoder_layer"></span><p>Decoder self-attention layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.decoder_layer.DecoderLayer">
@@ -12809,7 +13087,7 @@ torch.Tensor: Encoded memory mask (#batch, maxlen_in).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-lightconv2d">
-<span id="id121"></span><h2>espnet.nets.pytorch_backend.transformer.lightconv2d<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-lightconv2d" title="Permalink to this headline">¶</a></h2>
+<span id="id123"></span><h2>espnet.nets.pytorch_backend.transformer.lightconv2d<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-lightconv2d" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.lightconv2d"></span><p>Lightweight 2-Dimentional Convolution module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.lightconv2d.LightweightConvolution2D">
@@ -12859,7 +13137,7 @@ This is just for compatibility with self-attention layer (attention.py)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-plot">
-<span id="id122"></span><h2>espnet.nets.pytorch_backend.transformer.plot<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-plot" title="Permalink to this headline">¶</a></h2>
+<span id="id124"></span><h2>espnet.nets.pytorch_backend.transformer.plot<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-plot" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.plot"></span><dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.plot.PlotAttentionReport">
 <em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.transformer.plot.</code><code class="sig-name descname">PlotAttentionReport</code><span class="sig-paren">(</span><em class="sig-param">att_vis_fn</em>, <em class="sig-param">data</em>, <em class="sig-param">outdir</em>, <em class="sig-param">converter</em>, <em class="sig-param">transform</em>, <em class="sig-param">device</em>, <em class="sig-param">reverse=False</em>, <em class="sig-param">ikey='input'</em>, <em class="sig-param">iaxis=0</em>, <em class="sig-param">okey='output'</em>, <em class="sig-param">oaxis=0</em>, <em class="sig-param">subsampling_factor=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/transformer/plot.html#PlotAttentionReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.transformer.plot.PlotAttentionReport" title="Permalink to this definition">¶</a></dt>
@@ -12933,7 +13211,7 @@ values should be torch.Tensor (head, input_length, output_length)</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-encoder">
-<span id="id123"></span><h2>espnet.nets.pytorch_backend.transformer.encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-encoder" title="Permalink to this headline">¶</a></h2>
+<span id="id125"></span><h2>espnet.nets.pytorch_backend.transformer.encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-encoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.encoder"></span><p>Encoder definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.encoder.Encoder">
@@ -13028,7 +13306,7 @@ List[torch.Tensor]: List of new cache tensors.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-encoder-layer">
-<span id="id124"></span><h2>espnet.nets.pytorch_backend.transformer.encoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-encoder-layer" title="Permalink to this headline">¶</a></h2>
+<span id="id126"></span><h2>espnet.nets.pytorch_backend.transformer.encoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-encoder-layer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.encoder_layer"></span><p>Encoder self-attention layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.encoder_layer.EncoderLayer">
@@ -13081,7 +13359,7 @@ torch.Tensor: Mask tensor (#batch, time).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-encoder-mix">
-<span id="id125"></span><h2>espnet.nets.pytorch_backend.transformer.encoder_mix<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-encoder-mix" title="Permalink to this headline">¶</a></h2>
+<span id="id127"></span><h2>espnet.nets.pytorch_backend.transformer.encoder_mix<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-encoder-mix" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.encoder_mix"></span><p>Encoder Mix definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.encoder_mix.EncoderMix">
@@ -13156,7 +13434,7 @@ if False, no additional linear will be applied. i.e. x -&gt; x + att(x)</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-optimizer">
-<span id="id126"></span><h2>espnet.nets.pytorch_backend.transformer.optimizer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-optimizer" title="Permalink to this headline">¶</a></h2>
+<span id="id128"></span><h2>espnet.nets.pytorch_backend.transformer.optimizer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-optimizer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.optimizer"></span><p>Optimizer module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.optimizer.NoamOpt">
@@ -13210,7 +13488,7 @@ if False, no additional linear will be applied. i.e. x -&gt; x + att(x)</p></li>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-lightconv">
-<span id="id127"></span><h2>espnet.nets.pytorch_backend.transformer.lightconv<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-lightconv" title="Permalink to this headline">¶</a></h2>
+<span id="id129"></span><h2>espnet.nets.pytorch_backend.transformer.lightconv<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-lightconv" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.lightconv"></span><p>Lightweight Convolution Module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.lightconv.LightweightConvolution">
@@ -13260,7 +13538,7 @@ This is just for compatibility with self-attention layer (attention.py)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-dynamic-conv">
-<span id="id128"></span><h2>espnet.nets.pytorch_backend.transformer.dynamic_conv<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-dynamic-conv" title="Permalink to this headline">¶</a></h2>
+<span id="id130"></span><h2>espnet.nets.pytorch_backend.transformer.dynamic_conv<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-dynamic-conv" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.dynamic_conv"></span><p>Dynamic Convolution module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.dynamic_conv.DynamicConvolution">
@@ -13310,7 +13588,7 @@ This is just for compatibility with self-attention layer (attention.py)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-multi-layer-conv">
-<span id="id129"></span><h2>espnet.nets.pytorch_backend.transformer.multi_layer_conv<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-multi-layer-conv" title="Permalink to this headline">¶</a></h2>
+<span id="id131"></span><h2>espnet.nets.pytorch_backend.transformer.multi_layer_conv<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-multi-layer-conv" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.multi_layer_conv"></span><p>Layer modules for FFT block in FastSpeech (Feed-forward Transformer).</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.multi_layer_conv.Conv1dLinear">
@@ -13388,8 +13666,41 @@ in Transforner block, which is introduced in
 </dd></dl>
 
 </div>
+<div class="section" id="espnet-nets-pytorch-backend-transformer-posterior-based-loss">
+<span id="id133"></span><h2>espnet.nets.pytorch_backend.transformer.posterior_based_loss<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-posterior-based-loss" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.nets.pytorch_backend.transformer.posterior_based_loss"></span><p>Copyed from Label smoothing module.</p>
+<dl class="class">
+<dt id="espnet.nets.pytorch_backend.transformer.posterior_based_loss.PosteriorBasedLoss">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.nets.pytorch_backend.transformer.posterior_based_loss.</code><code class="sig-name descname">PosteriorBasedLoss</code><span class="sig-paren">(</span><em class="sig-param">size</em>, <em class="sig-param">padding_idx</em>, <em class="sig-param">smoothing</em>, <em class="sig-param">normalize_length=False</em>, <em class="sig-param">criterion=KLDivLoss()</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/transformer/posterior_based_loss.html#PosteriorBasedLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.transformer.posterior_based_loss.PosteriorBasedLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.transformer.posterior_based_loss.PosteriorBasedLoss.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">target</em>, <em class="sig-param">hyps_list</em>, <em class="sig-param">sentences_scores_list</em>, <em class="sig-param">soft_tgt_weight</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/transformer/posterior_based_loss.html#PosteriorBasedLoss.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.transformer.posterior_based_loss.PosteriorBasedLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute loss between x and target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – prediction (batch, seqlen, class) (64, 12, 15210)</p></li>
+<li><p><strong>target</strong> (<em>torch.Tensor</em>) – target signal masked with self.padding_id (batch, seqlen)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scalar float value</p>
+</dd>
+</dl>
+<p>:rtype torch.Tensor</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.nets.pytorch_backend.transformer.posterior_based_loss.PosteriorBasedLoss.padding_for_softloss">
+<code class="sig-name descname">padding_for_softloss</code><span class="sig-paren">(</span><em class="sig-param">pred_pad</em>, <em class="sig-param">hyps_list</em>, <em class="sig-param">sentences_scores_list</em>, <em class="sig-param">vocab_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/nets/pytorch_backend/transformer/posterior_based_loss.html#PosteriorBasedLoss.padding_for_softloss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.nets.pytorch_backend.transformer.posterior_based_loss.PosteriorBasedLoss.padding_for_softloss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-positionwise-feed-forward">
-<span id="id131"></span><h2>espnet.nets.pytorch_backend.transformer.positionwise_feed_forward<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-positionwise-feed-forward" title="Permalink to this headline">¶</a></h2>
+<span id="id134"></span><h2>espnet.nets.pytorch_backend.transformer.positionwise_feed_forward<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-positionwise-feed-forward" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.positionwise_feed_forward"></span><p>Positionwise feed forward layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.positionwise_feed_forward.PositionwiseFeedForward">
@@ -13416,7 +13727,7 @@ in Transforner block, which is introduced in
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-label-smoothing-loss">
-<span id="id132"></span><h2>espnet.nets.pytorch_backend.transformer.label_smoothing_loss<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-label-smoothing-loss" title="Permalink to this headline">¶</a></h2>
+<span id="id135"></span><h2>espnet.nets.pytorch_backend.transformer.label_smoothing_loss<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-label-smoothing-loss" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.label_smoothing_loss"></span><p>Label smoothing module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.label_smoothing_loss.LabelSmoothingLoss">
@@ -13457,7 +13768,7 @@ in Transforner block, which is introduced in
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-contextual-block-encoder-layer">
-<span id="id133"></span><h2>espnet.nets.pytorch_backend.transformer.contextual_block_encoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-contextual-block-encoder-layer" title="Permalink to this headline">¶</a></h2>
+<span id="id136"></span><h2>espnet.nets.pytorch_backend.transformer.contextual_block_encoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-contextual-block-encoder-layer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.contextual_block_encoder_layer"></span><p>Encoder self-attention layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.contextual_block_encoder_layer.ContextualBlockEncoderLayer">
@@ -13516,7 +13827,7 @@ layer_idx (int): layer index number</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-attention">
-<span id="id134"></span><h2>espnet.nets.pytorch_backend.transformer.attention<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-attention" title="Permalink to this headline">¶</a></h2>
+<span id="id137"></span><h2>espnet.nets.pytorch_backend.transformer.attention<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-attention" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.attention"></span><p>Multi-Head Attention layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.attention.LegacyRelPositionMultiHeadedAttention">
@@ -13734,7 +14045,7 @@ torch.Tensor: Transformed value tensor (#batch, n_head, time2, d_k).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-subsampling-without-posenc">
-<span id="id135"></span><h2>espnet.nets.pytorch_backend.transformer.subsampling_without_posenc<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-subsampling-without-posenc" title="Permalink to this headline">¶</a></h2>
+<span id="id138"></span><h2>espnet.nets.pytorch_backend.transformer.subsampling_without_posenc<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-subsampling-without-posenc" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.subsampling_without_posenc"></span><p>Subsampling layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.subsampling_without_posenc.Conv2dSubsamplingWOPosEnc">
@@ -13783,7 +14094,7 @@ torch.Tensor: Transformed value tensor (#batch, n_head, time2, d_k).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-initializer">
-<span id="id136"></span><h2>espnet.nets.pytorch_backend.transformer.initializer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-initializer" title="Permalink to this headline">¶</a></h2>
+<span id="id139"></span><h2>espnet.nets.pytorch_backend.transformer.initializer<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-initializer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.initializer"></span><p>Parameter initialization.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transformer.initializer.initialize">
@@ -13801,7 +14112,7 @@ torch.Tensor: Transformed value tensor (#batch, n_head, time2, d_k).</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-decoder">
-<span id="id137"></span><h2>espnet.nets.pytorch_backend.transformer.decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-decoder" title="Permalink to this headline">¶</a></h2>
+<span id="id140"></span><h2>espnet.nets.pytorch_backend.transformer.decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-decoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.decoder"></span><p>Decoder definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.decoder.Decoder">
@@ -13937,7 +14248,7 @@ List[torch.Tensor]: List of cache tensors of each decoder layer.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-subsampling">
-<span id="id138"></span><h2>espnet.nets.pytorch_backend.transformer.subsampling<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-subsampling" title="Permalink to this headline">¶</a></h2>
+<span id="id141"></span><h2>espnet.nets.pytorch_backend.transformer.subsampling<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-subsampling" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.subsampling"></span><p>Subsampling layer definition.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transformer.subsampling.Conv2dSubsampling">
@@ -14096,7 +14407,7 @@ List[torch.Tensor]: List of cache tensors of each decoder layer.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transformer-add-sos-eos">
-<span id="id139"></span><h2>espnet.nets.pytorch_backend.transformer.add_sos_eos<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-add-sos-eos" title="Permalink to this headline">¶</a></h2>
+<span id="id142"></span><h2>espnet.nets.pytorch_backend.transformer.add_sos_eos<a class="headerlink" href="#espnet-nets-pytorch-backend-transformer-add-sos-eos" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transformer.add_sos_eos"></span><p>Unility funcitons for Transformer.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transformer.add_sos_eos.add_sos_eos">
@@ -14128,7 +14439,7 @@ List[torch.Tensor]: List of cache tensors of each decoder layer.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-utils">
-<span id="id140"></span><h2>espnet.nets.pytorch_backend.transducer.utils<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-utils" title="Permalink to this headline">¶</a></h2>
+<span id="id143"></span><h2>espnet.nets.pytorch_backend.transducer.utils<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-utils" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.utils"></span><p>Utility functions for transducer models.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transducer.utils.check_batch_state">
@@ -14374,7 +14685,7 @@ target_len (torch.Tensor): batch of output sequence lengths (B)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-transformer-decoder-layer">
-<span id="id141"></span><h2>espnet.nets.pytorch_backend.transducer.transformer_decoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-transformer-decoder-layer" title="Permalink to this headline">¶</a></h2>
+<span id="id144"></span><h2>espnet.nets.pytorch_backend.transducer.transformer_decoder_layer<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-transformer-decoder-layer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.transformer_decoder_layer"></span><p>Decoder layer definition for transformer-transducer models.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.transformer_decoder_layer.DecoderLayer">
@@ -14419,7 +14730,7 @@ tgt_mask (torch.Tensor): mask for tgt (B, Lmax)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-vgg2l">
-<span id="id142"></span><h2>espnet.nets.pytorch_backend.transducer.vgg2l<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-vgg2l" title="Permalink to this headline">¶</a></h2>
+<span id="id145"></span><h2>espnet.nets.pytorch_backend.transducer.vgg2l<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-vgg2l" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.vgg2l"></span><p>VGG2L module definition for transformer encoder.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.vgg2l.VGG2L">
@@ -14482,11 +14793,11 @@ tgt_mask (torch.Tensor): mask for tgt (B, Lmax)</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-init">
-<span id="id143"></span><h2>espnet.nets.pytorch_backend.transducer.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-init" title="Permalink to this headline">¶</a></h2>
+<span id="id146"></span><h2>espnet.nets.pytorch_backend.transducer.__init__<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-rnn-encoder">
-<span id="id144"></span><h2>espnet.nets.pytorch_backend.transducer.rnn_encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-rnn-encoder" title="Permalink to this headline">¶</a></h2>
+<span id="id147"></span><h2>espnet.nets.pytorch_backend.transducer.rnn_encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-rnn-encoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.rnn_encoder"></span><p>RNN encoder implementation for transducer-based models.</p>
 <p>These classes are based on the ones in espnet.nets.pytorch_backend.rnn.encoders,
 and modified to output intermediate layers representation based on a list of
@@ -14698,7 +15009,7 @@ of a multi-layer LSTM for that purpose.</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-causal-conv1d">
-<span id="id145"></span><h2>espnet.nets.pytorch_backend.transducer.causal_conv1d<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-causal-conv1d" title="Permalink to this headline">¶</a></h2>
+<span id="id148"></span><h2>espnet.nets.pytorch_backend.transducer.causal_conv1d<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-causal-conv1d" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.causal_conv1d"></span><p>CausalConv1d module definition for custom decoder.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.causal_conv1d.CausalConv1d">
@@ -14744,7 +15055,7 @@ x_mask (torch.Tensor): (B, 1, sub(U))</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-tdnn">
-<span id="id146"></span><h2>espnet.nets.pytorch_backend.transducer.tdnn<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-tdnn" title="Permalink to this headline">¶</a></h2>
+<span id="id149"></span><h2>espnet.nets.pytorch_backend.transducer.tdnn<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-tdnn" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.tdnn"></span><p>TDNN modules definition for transformer encoder.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.tdnn.TDNN">
@@ -14822,7 +15133,7 @@ masks: Output mask (B, 1, sub(T))</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-auxiliary-task">
-<span id="id147"></span><h2>espnet.nets.pytorch_backend.transducer.auxiliary_task<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-auxiliary-task" title="Permalink to this headline">¶</a></h2>
+<span id="id150"></span><h2>espnet.nets.pytorch_backend.transducer.auxiliary_task<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-auxiliary-task" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.auxiliary_task"></span><p>Auxiliary task implementation for transducer models.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.auxiliary_task.AuxiliaryTask">
@@ -14867,7 +15178,7 @@ masks: Output mask (B, 1, sub(T))</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-custom-encoder">
-<span id="id148"></span><h2>espnet.nets.pytorch_backend.transducer.custom_encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-custom-encoder" title="Permalink to this headline">¶</a></h2>
+<span id="id151"></span><h2>espnet.nets.pytorch_backend.transducer.custom_encoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-custom-encoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.custom_encoder"></span><p>Cutom encoder definition for transducer models.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.custom_encoder.CustomEncoder">
@@ -14922,7 +15233,7 @@ masks: Output mask (B, 1, sub(T))</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-rnn-decoder">
-<span id="id149"></span><h2>espnet.nets.pytorch_backend.transducer.rnn_decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-rnn-decoder" title="Permalink to this headline">¶</a></h2>
+<span id="id152"></span><h2>espnet.nets.pytorch_backend.transducer.rnn_decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-rnn-decoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.rnn_decoder"></span><p>RNN decoder for transducer-based models.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.rnn_decoder.DecoderRNNT">
@@ -15143,7 +15454,7 @@ state (tuple): decoder states</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-joint-network">
-<span id="id150"></span><h2>espnet.nets.pytorch_backend.transducer.joint_network<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-joint-network" title="Permalink to this headline">¶</a></h2>
+<span id="id153"></span><h2>espnet.nets.pytorch_backend.transducer.joint_network<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-joint-network" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.joint_network"></span><p>Transducer joint network implementation.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.joint_network.JointNetwork">
@@ -15183,7 +15494,7 @@ state (tuple): decoder states</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-arguments">
-<span id="id151"></span><h2>espnet.nets.pytorch_backend.transducer.arguments<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-arguments" title="Permalink to this headline">¶</a></h2>
+<span id="id154"></span><h2>espnet.nets.pytorch_backend.transducer.arguments<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-arguments" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.arguments"></span><p>Transducer model arguments.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transducer.arguments.add_auxiliary_task_arguments">
@@ -15241,7 +15552,7 @@ state (tuple): decoder states</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-error-calculator">
-<span id="id152"></span><h2>espnet.nets.pytorch_backend.transducer.error_calculator<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-error-calculator" title="Permalink to this headline">¶</a></h2>
+<span id="id155"></span><h2>espnet.nets.pytorch_backend.transducer.error_calculator<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-error-calculator" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.error_calculator"></span><p>CER/WER monitoring for transducer models.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.error_calculator.ErrorCalculator">
@@ -15327,7 +15638,7 @@ state (tuple): decoder states</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-blocks">
-<span id="id153"></span><h2>espnet.nets.pytorch_backend.transducer.blocks<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-blocks" title="Permalink to this headline">¶</a></h2>
+<span id="id156"></span><h2>espnet.nets.pytorch_backend.transducer.blocks<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-blocks" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.blocks"></span><p>Set of methods to create custom architecture.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transducer.blocks.build_blocks">
@@ -15516,7 +15827,7 @@ self_attn_class (torch.nn.Module): self-attention class</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-initializer">
-<span id="id154"></span><h2>espnet.nets.pytorch_backend.transducer.initializer<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-initializer" title="Permalink to this headline">¶</a></h2>
+<span id="id157"></span><h2>espnet.nets.pytorch_backend.transducer.initializer<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-initializer" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.initializer"></span><p>Parameter initialization for transducer model.</p>
 <dl class="function">
 <dt id="espnet.nets.pytorch_backend.transducer.initializer.initializer">
@@ -15534,7 +15845,7 @@ self_attn_class (torch.nn.Module): self-attention class</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-loss">
-<span id="id155"></span><h2>espnet.nets.pytorch_backend.transducer.loss<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-loss" title="Permalink to this headline">¶</a></h2>
+<span id="id158"></span><h2>espnet.nets.pytorch_backend.transducer.loss<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-loss" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.loss"></span><p>Transducer loss module.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.loss.TransLoss">
@@ -15577,7 +15888,7 @@ self_attn_class (torch.nn.Module): self-attention class</p>
 
 </div>
 <div class="section" id="espnet-nets-pytorch-backend-transducer-custom-decoder">
-<span id="id156"></span><h2>espnet.nets.pytorch_backend.transducer.custom_decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-custom-decoder" title="Permalink to this headline">¶</a></h2>
+<span id="id159"></span><h2>espnet.nets.pytorch_backend.transducer.custom_decoder<a class="headerlink" href="#espnet-nets-pytorch-backend-transducer-custom-decoder" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.nets.pytorch_backend.transducer.custom_decoder"></span><p>Custom decoder definition for transducer models.</p>
 <dl class="class">
 <dt id="espnet.nets.pytorch_backend.transducer.custom_decoder.CustomDecoder">

@@ -120,15 +120,18 @@
 <li class="toctree-l1"><a class="reference internal" href="espnet.lm.html">espnet.lm package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">espnet.asr package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-asr-utils">espnet.asr.asr_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-asr-utils-pre-decoding">espnet.asr.asr_utils_pre_decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-init">espnet.asr.__init__</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-asr-mix-utils">espnet.asr.asr_mix_utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-chainer-backend-init">espnet.asr.chainer_backend.__init__</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-chainer-backend-asr">espnet.asr.chainer_backend.asr</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-init">espnet.asr.pytorch_backend.__init__</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-asr-init">espnet.asr.pytorch_backend.asr_init</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-asr-pre-decoding">espnet.asr.pytorch_backend.asr_pre_decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-recog">espnet.asr.pytorch_backend.recog</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-asr-mix">espnet.asr.pytorch_backend.asr_mix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-asr">espnet.asr.pytorch_backend.asr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-asr-pytorch-backend-asr-init-pre-decoding">espnet.asr.pytorch_backend.asr_init_pre_decoding</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="espnet.transform.html">espnet.transform package</a></li>
@@ -677,12 +680,422 @@ the :meth: <cite>str.format</cite> method. For example,
 </dd></dl>
 
 </div>
+<div class="section" id="espnet-asr-asr-utils-pre-decoding">
+<span id="id2"></span><h2>espnet.asr.asr_utils_pre_decoding<a class="headerlink" href="#espnet-asr-asr-utils-pre-decoding" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.asr_utils_pre_decoding"></span><dl class="class">
+<dt id="espnet.asr.asr_utils_pre_decoding.CompareValueTrigger">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">CompareValueTrigger</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">compare_fn</em>, <em class="sig-param">trigger=(1</em>, <em class="sig-param">'epoch')</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#CompareValueTrigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.CompareValueTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Trigger invoked when key value getting bigger or lower than before.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – Key of value.</p></li>
+<li><p><strong>compare_fn</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>) </em><em>-&gt; bool</em>) – Function to compare the values.</p></li>
+<li><p><strong>trigger</strong> (<em>tuple</em><em>(</em><em>int</em><em>, </em><em>str</em><em>)</em>) – Trigger that decide the comparison interval.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotAttentionReport">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">PlotAttentionReport</code><span class="sig-paren">(</span><em class="sig-param">att_vis_fn</em>, <em class="sig-param">data</em>, <em class="sig-param">outdir</em>, <em class="sig-param">converter</em>, <em class="sig-param">transform</em>, <em class="sig-param">device</em>, <em class="sig-param">reverse=False</em>, <em class="sig-param">ikey='input'</em>, <em class="sig-param">iaxis=0</em>, <em class="sig-param">okey='output'</em>, <em class="sig-param">oaxis=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotAttentionReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotAttentionReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extension.Extension</span></code></p>
+<p>Plot attention reporter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>att_vis_fn</strong> (<em>espnet.nets.*_backend.e2e_asr.E2E.calculate_all_attentions</em>) – Function of attention visualization.</p></li>
+<li><p><strong>data</strong> (<em>list</em><em>[</em><em>tuple</em><em>(</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>list</em><em>[</em><em>Any</em><em>]</em><em>]</em><em>)</em><em>]</em>) – List json utt key items.</p></li>
+<li><p><strong>outdir</strong> (<em>str</em>) – Directory to save figures.</p></li>
+<li><p><strong>converter</strong> (<em>espnet.asr.*_backend.asr.CustomConverter</em>) – Function to convert data.</p></li>
+<li><p><strong>device</strong> (<em>int | torch.device</em>) – Device.</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – If True, input and output length are reversed.</p></li>
+<li><p><strong>ikey</strong> (<em>str</em>) – Key to access input
+(for ASR ikey=”input”, for MT ikey=”output”.)</p></li>
+<li><p><strong>iaxis</strong> (<em>int</em>) – Dimension to access input (for ASR iaxis=0, for MT iaxis=1.)</p></li>
+<li><p><strong>okey</strong> (<em>str</em>) – Key to access output (for ASR okey=”input”, MT okay=”output”.)</p></li>
+<li><p><strong>oaxis</strong> (<em>int</em>) – Dimension to access output (for ASR oaxis=0, for MT oaxis=0.)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.draw_attention_plot">
+<code class="sig-name descname">draw_attention_plot</code><span class="sig-paren">(</span><em class="sig-param">att_w</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotAttentionReport.draw_attention_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.draw_attention_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the att_w matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>pyplot object with attention matrix image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>matplotlib.pyplot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.draw_han_plot">
+<code class="sig-name descname">draw_han_plot</code><span class="sig-paren">(</span><em class="sig-param">att_w</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotAttentionReport.draw_han_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.draw_han_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the att_w matrix for hierarchical attention.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>pyplot object with attention matrix image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>matplotlib.pyplot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.get_attention_weight">
+<code class="sig-name descname">get_attention_weight</code><span class="sig-paren">(</span><em class="sig-param">idx</em>, <em class="sig-param">att_w</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotAttentionReport.get_attention_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.get_attention_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform attention matrix with regard to self.reverse.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.get_attention_weights">
+<code class="sig-name descname">get_attention_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotAttentionReport.get_attention_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.get_attention_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return attention weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>attention weights. float. Its shape would be</dt><dd><p>differ from backend.
+* pytorch-&gt; 1) multi-head case =&gt; (B, H, Lmax, Tmax), 2)</p>
+<blockquote>
+<div><p>other case =&gt; (B, Lmax, Tmax).</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>chainer-&gt; (B, Lmax, Tmax)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.log_attentions">
+<code class="sig-name descname">log_attentions</code><span class="sig-paren">(</span><em class="sig-param">logger</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotAttentionReport.log_attentions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotAttentionReport.log_attentions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add image files of att_ws matrix to the tensorboard.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotCTCReport">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">PlotCTCReport</code><span class="sig-paren">(</span><em class="sig-param">ctc_vis_fn</em>, <em class="sig-param">data</em>, <em class="sig-param">outdir</em>, <em class="sig-param">converter</em>, <em class="sig-param">transform</em>, <em class="sig-param">device</em>, <em class="sig-param">reverse=False</em>, <em class="sig-param">ikey='input'</em>, <em class="sig-param">iaxis=0</em>, <em class="sig-param">okey='output'</em>, <em class="sig-param">oaxis=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotCTCReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotCTCReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.extension.Extension</span></code></p>
+<p>Plot CTC reporter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctc_vis_fn</strong> (<em>espnet.nets.*_backend.e2e_asr.E2E.calculate_all_ctc_probs</em>) – Function of CTC visualization.</p></li>
+<li><p><strong>data</strong> (<em>list</em><em>[</em><em>tuple</em><em>(</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>list</em><em>[</em><em>Any</em><em>]</em><em>]</em><em>)</em><em>]</em>) – List json utt key items.</p></li>
+<li><p><strong>outdir</strong> (<em>str</em>) – Directory to save figures.</p></li>
+<li><p><strong>converter</strong> (<em>espnet.asr.*_backend.asr.CustomConverter</em>) – Function to convert data.</p></li>
+<li><p><strong>device</strong> (<em>int | torch.device</em>) – Device.</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – If True, input and output length are reversed.</p></li>
+<li><p><strong>ikey</strong> (<em>str</em>) – Key to access input
+(for ASR ikey=”input”, for MT ikey=”output”.)</p></li>
+<li><p><strong>iaxis</strong> (<em>int</em>) – Dimension to access input (for ASR iaxis=0, for MT iaxis=1.)</p></li>
+<li><p><strong>okey</strong> (<em>str</em>) – Key to access output (for ASR okey=”input”, MT okay=”output”.)</p></li>
+<li><p><strong>oaxis</strong> (<em>int</em>) – Dimension to access output (for ASR oaxis=0, for MT oaxis=0.)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotCTCReport.draw_ctc_plot">
+<code class="sig-name descname">draw_ctc_plot</code><span class="sig-paren">(</span><em class="sig-param">ctc_prob</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotCTCReport.draw_ctc_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotCTCReport.draw_ctc_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the ctc_prob matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>pyplot object with CTC prob matrix image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>matplotlib.pyplot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotCTCReport.get_ctc_probs">
+<code class="sig-name descname">get_ctc_probs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotCTCReport.get_ctc_probs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotCTCReport.get_ctc_probs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return CTC probs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>CTC probs. float. Its shape would be</dt><dd><p>differ from backend. (B, Tmax, vocab).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.asr_utils_pre_decoding.PlotCTCReport.log_ctc_probs">
+<code class="sig-name descname">log_ctc_probs</code><span class="sig-paren">(</span><em class="sig-param">logger</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#PlotCTCReport.log_ctc_probs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.PlotCTCReport.log_ctc_probs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add image files of ctc probs to the tensorboard.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.adadelta_eps_decay">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">adadelta_eps_decay</code><span class="sig-paren">(</span><em class="sig-param">eps_decay</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#adadelta_eps_decay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.adadelta_eps_decay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension to perform adadelta eps decay.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eps_decay</strong> (<em>float</em>) – Decay rate of eps.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An extension function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.adam_lr_decay">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">adam_lr_decay</code><span class="sig-paren">(</span><em class="sig-param">eps_decay</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#adam_lr_decay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.adam_lr_decay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension to perform adam lr decay.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eps_decay</strong> (<em>float</em>) – Decay rate of lr.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An extension function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.add_gradient_noise">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">add_gradient_noise</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">iteration</em>, <em class="sig-param">duration=100</em>, <em class="sig-param">eta=1.0</em>, <em class="sig-param">scale_factor=0.55</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#add_gradient_noise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.add_gradient_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds noise from a standard normal distribution to the gradients.</p>
+<p>The standard deviation (<cite>sigma</cite>) is controlled by the three hyper-parameters below.
+<cite>sigma</cite> goes to zero (no noise) with more iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.model</em>) – Model.</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – Number of iterations.</p></li>
+<li><p><strong>duration</strong> (<em>int</em>) – Number of durations to control the interval of the <cite>sigma</cite> change.</p></li>
+<li><p><strong>eta</strong> (<em>float</em>) – The magnitude of <cite>sigma</cite>.</p></li>
+<li><p><strong>scale_factor</strong> (<em>float</em>) – The scale of <cite>sigma</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.add_results_to_json">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">add_results_to_json</code><span class="sig-paren">(</span><em class="sig-param">js</em>, <em class="sig-param">nbest_hyps</em>, <em class="sig-param">char_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#add_results_to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.add_results_to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add N-best results to json.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>js</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Groundtruth utterance dict.</p></li>
+<li><p><strong>nbest_hyps_sd</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – List of hypothesis for multi_speakers: nutts x nspkrs.</p></li>
+<li><p><strong>char_list</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of characters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>N-best results added utterance dict.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.chainer_load">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">chainer_load</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#chainer_load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.chainer_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load chainer model parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Model path or snapshot file path to be loaded.</p></li>
+<li><p><strong>model</strong> (<em>chainer.Chain</em>) – Chainer model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.format_mulenc_args">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">format_mulenc_args</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#format_mulenc_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.format_mulenc_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format args for multi-encoder setup.</p>
+<p>It deals with following situations:  (when args.num_encs=2):
+1. args.elayers = None -&gt; args.elayers = [4, 4];
+2. args.elayers = 4 -&gt; args.elayers = [4, 4];
+3. args.elayers = [4, 4, 4] -&gt; args.elayers = [4, 4].</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.get_model_conf">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">get_model_conf</code><span class="sig-paren">(</span><em class="sig-param">model_path</em>, <em class="sig-param">conf_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#get_model_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.get_model_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get model config information by reading a model config file (model.json).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_path</strong> (<em>str</em>) – Model path.</p></li>
+<li><p><strong>conf_path</strong> (<em>str</em>) – Optional model config path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Config information loaded from json file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[int, int, dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.parse_hypothesis">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">parse_hypothesis</code><span class="sig-paren">(</span><em class="sig-param">hyp</em>, <em class="sig-param">char_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#parse_hypothesis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.parse_hypothesis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse hypothesis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hyp</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – Recognition hypothesis.</p></li>
+<li><p><strong>char_list</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of characters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple(str, str, str, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.plot_spectrogram">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">plot_spectrogram</code><span class="sig-paren">(</span><em class="sig-param">plt</em>, <em class="sig-param">spec</em>, <em class="sig-param">mode='db'</em>, <em class="sig-param">fs=None</em>, <em class="sig-param">frame_shift=None</em>, <em class="sig-param">bottom=True</em>, <em class="sig-param">left=True</em>, <em class="sig-param">right=True</em>, <em class="sig-param">top=False</em>, <em class="sig-param">labelbottom=True</em>, <em class="sig-param">labelleft=True</em>, <em class="sig-param">labelright=True</em>, <em class="sig-param">labeltop=False</em>, <em class="sig-param">cmap='inferno'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#plot_spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot spectrogram using matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plt</strong> (<em>matplotlib.pyplot</em>) – pyplot object.</p></li>
+<li><p><strong>spec</strong> (<em>numpy.ndarray</em>) – Input stft (Freq, Time)</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – db or linear.</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – Sample frequency. To convert y-axis to kHz unit.</p></li>
+<li><p><strong>frame_shift</strong> (<em>int</em>) – The frame shift of stft. To convert x-axis to second unit.</p></li>
+<li><p><strong>bottom</strong> (<em>bool</em>) – Whether to draw the respective ticks.</p></li>
+<li><p><strong>left</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>right</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>top</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>labelbottom</strong> (<em>bool</em>) – Whether to draw the respective tick labels.</p></li>
+<li><p><strong>labelleft</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>labelright</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>labeltop</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>cmap</strong> (<em>str</em>) – Colormap defined in matplotlib.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.restore_snapshot">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">restore_snapshot</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">snapshot</em>, <em class="sig-param">load_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#restore_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.restore_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension to restore snapshot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An extension function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.snapshot_object">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">snapshot_object</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#snapshot_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.snapshot_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a trainer extension to take snapshots of a given object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>model</em>) – Object to serialize.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Name of the file into which the object is serialized.It can
+be a format string, where the trainer object is passed to
+the :meth: <cite>str.format</cite> method. For example,
+<code class="docutils literal notranslate"><span class="pre">'snapshot_{.updater.iteration}'</span></code> is converted to
+<code class="docutils literal notranslate"><span class="pre">'snapshot_10000'</span></code> at the 10,000th iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An extension function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.torch_load">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">torch_load</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#torch_load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.torch_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load torch model states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Model path or snapshot file path to be loaded.</p></li>
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – Torch model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.torch_resume">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">torch_resume</code><span class="sig-paren">(</span><em class="sig-param">snapshot_path</em>, <em class="sig-param">trainer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#torch_resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.torch_resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resume from snapshot for pytorch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snapshot_path</strong> (<em>str</em>) – Snapshot file path.</p></li>
+<li><p><strong>trainer</strong> (<em>chainer.training.Trainer</em>) – Chainer’s trainer instance.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.torch_save">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">torch_save</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#torch_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.torch_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save torch model states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Model path to be saved.</p></li>
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – Torch model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.asr_utils_pre_decoding.torch_snapshot">
+<code class="sig-prename descclassname">espnet.asr.asr_utils_pre_decoding.</code><code class="sig-name descname">torch_snapshot</code><span class="sig-paren">(</span><em class="sig-param">savefun=&lt;function save&gt;</em>, <em class="sig-param">filename='snapshot.ep.{.updater.epoch}'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/asr_utils_pre_decoding.html#torch_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.asr_utils_pre_decoding.torch_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extension to take snapshot of the trainer for pytorch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An extension function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-asr-init">
-<span id="id2"></span><h2>espnet.asr.__init__<a class="headerlink" href="#espnet-asr-init" title="Permalink to this headline">¶</a></h2>
+<span id="id3"></span><h2>espnet.asr.__init__<a class="headerlink" href="#espnet-asr-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-asr-asr-mix-utils">
-<span id="id3"></span><h2>espnet.asr.asr_mix_utils<a class="headerlink" href="#espnet-asr-asr-mix-utils" title="Permalink to this headline">¶</a></h2>
+<span id="id4"></span><h2>espnet.asr.asr_mix_utils<a class="headerlink" href="#espnet-asr-asr-mix-utils" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.asr_mix_utils"></span><p>This script is used to provide utility functions designed for multi-speaker ASR.</p>
 <dl class="simple">
 <dt>Copyright 2017 Johns Hopkins University (Shinji Watanabe)</dt><dd><p>Apache 2.0  (<a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>)</p>
@@ -788,11 +1201,11 @@ torch_snapshot, torch_save, torch_resume, AttributeDict, get_model_conf.</p>
 
 </div>
 <div class="section" id="espnet-asr-chainer-backend-init">
-<span id="id4"></span><h2>espnet.asr.chainer_backend.__init__<a class="headerlink" href="#espnet-asr-chainer-backend-init" title="Permalink to this headline">¶</a></h2>
+<span id="id5"></span><h2>espnet.asr.chainer_backend.__init__<a class="headerlink" href="#espnet-asr-chainer-backend-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.chainer_backend.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-asr-chainer-backend-asr">
-<span id="id5"></span><h2>espnet.asr.chainer_backend.asr<a class="headerlink" href="#espnet-asr-chainer-backend-asr" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2>espnet.asr.chainer_backend.asr<a class="headerlink" href="#espnet-asr-chainer-backend-asr" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.chainer_backend.asr"></span><p>Training/decoding definition for the speech recognition task.</p>
 <dl class="function">
 <dt id="espnet.asr.chainer_backend.asr.recog">
@@ -818,11 +1231,11 @@ torch_snapshot, torch_save, torch_resume, AttributeDict, get_model_conf.</p>
 
 </div>
 <div class="section" id="espnet-asr-pytorch-backend-init">
-<span id="id6"></span><h2>espnet.asr.pytorch_backend.__init__<a class="headerlink" href="#espnet-asr-pytorch-backend-init" title="Permalink to this headline">¶</a></h2>
+<span id="id7"></span><h2>espnet.asr.pytorch_backend.__init__<a class="headerlink" href="#espnet-asr-pytorch-backend-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.pytorch_backend.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-asr-pytorch-backend-asr-init">
-<span id="id7"></span><h2>espnet.asr.pytorch_backend.asr_init<a class="headerlink" href="#espnet-asr-pytorch-backend-asr-init" title="Permalink to this headline">¶</a></h2>
+<span id="id8"></span><h2>espnet.asr.pytorch_backend.asr_init<a class="headerlink" href="#espnet-asr-pytorch-backend-asr-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.pytorch_backend.asr_init"></span><p>Finetuning methods.</p>
 <dl class="function">
 <dt id="espnet.asr.pytorch_backend.asr_init.filter_modules">
@@ -976,8 +1389,150 @@ model_params (filter): filtered model parameters</p>
 </dd></dl>
 
 </div>
+<div class="section" id="espnet-asr-pytorch-backend-asr-pre-decoding">
+<span id="id9"></span><h2>espnet.asr.pytorch_backend.asr_pre_decoding<a class="headerlink" href="#espnet-asr-pytorch-backend-asr-pre-decoding" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.pytorch_backend.asr_pre_decoding"></span><p>Training/decoding definition for the speech recognition task.</p>
+<dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomConverter">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">CustomConverter</code><span class="sig-paren">(</span><em class="sig-param">subsampling_factor=1</em>, <em class="sig-param">dtype=torch.float32</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Custom batch converter for Pytorch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subsampling_factor</strong> (<em>int</em>) – The subsampling factor.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em>) – Data type to convert.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Construct a CustomConverter object.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomConverterMulEnc">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">CustomConverterMulEnc</code><span class="sig-paren">(</span><em class="sig-param">subsamping_factors=[1, 1], dtype=torch.float32</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomConverterMulEnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomConverterMulEnc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Custom batch converter for Pytorch in multi-encoder case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subsampling_factors</strong> (<em>list</em>) – List of subsampling factors for each encoder.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em>) – Data type to convert.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Initialize the converter.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">CustomEvaluator</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">iterator</em>, <em class="sig-param">target</em>, <em class="sig-param">device</em>, <em class="sig-param">ngpu=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="espnet.utils.html#espnet.utils.training.evaluator.BaseEvaluator" title="espnet.utils.training.evaluator.BaseEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">espnet.utils.training.evaluator.BaseEvaluator</span></code></a></p>
+<p>Custom Evaluator for Pytorch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – The model to evaluate.</p></li>
+<li><p><strong>iterator</strong> (<em>chainer.dataset.Iterator</em>) – The train iterator.</p></li>
+<li><p><strong>target</strong> (<em>link | dict</em><em>[</em><em>str</em><em>, </em><em>link</em><em>]</em>) – Link object or a dictionary of
+links to evaluate. If this is just a link object, the link is
+registered by the name <code class="docutils literal notranslate"><span class="pre">'main'</span></code>.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – The device used.</p></li>
+<li><p><strong>ngpu</strong> (<em>int</em>) – The number of GPUs.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomEvaluator.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomEvaluator.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomEvaluator.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main evaluate routine for CustomEvaluator.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomUpdater">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">CustomUpdater</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">grad_clip_threshold</em>, <em class="sig-param">train_iter</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">device</em>, <em class="sig-param">ngpu</em>, <em class="sig-param">grad_noise=False</em>, <em class="sig-param">accum_grad=1</em>, <em class="sig-param">use_apex=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomUpdater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomUpdater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">chainer.training.updaters.standard_updater.StandardUpdater</span></code></p>
+<p>Custom Updater for Pytorch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – The model to update.</p></li>
+<li><p><strong>grad_clip_threshold</strong> (<em>float</em>) – The gradient clipping value to use.</p></li>
+<li><p><strong>train_iter</strong> (<em>chainer.dataset.Iterator</em>) – The training iterator.</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.optimizer</em>) – The training optimizer.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – The device to use.</p></li>
+<li><p><strong>ngpu</strong> (<em>int</em>) – The number of gpus to use.</p></li>
+<li><p><strong>use_apex</strong> (<em>bool</em>) – The flag to use Apex in backprop.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomUpdater.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomUpdater.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomUpdater.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the parameters of the target model.</p>
+<p>This method implements an update formula for the training task,
+including data loading, forward/backward computations, and actual
+updates of parameters.</p>
+<p>This method is called once at each iteration of the training loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.CustomUpdater.update_core">
+<code class="sig-name descname">update_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#CustomUpdater.update_core"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.CustomUpdater.update_core" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main update routine of the CustomUpdater.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.ctc_align">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">ctc_align</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#ctc_align"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.ctc_align" title="Permalink to this definition">¶</a></dt>
+<dd><p>CTC forced alignments with the given args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.enhance">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">enhance</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#enhance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.enhance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dumping enhanced speech and mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.recog">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">recog</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#recog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.recog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode with the given args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_pre_decoding.train">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_pre_decoding.</code><code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_pre_decoding.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_pre_decoding.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train with the given args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-asr-pytorch-backend-recog">
-<span id="id8"></span><h2>espnet.asr.pytorch_backend.recog<a class="headerlink" href="#espnet-asr-pytorch-backend-recog" title="Permalink to this headline">¶</a></h2>
+<span id="id10"></span><h2>espnet.asr.pytorch_backend.recog<a class="headerlink" href="#espnet-asr-pytorch-backend-recog" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.pytorch_backend.recog"></span><p>V2 backend for <cite>asr_recog.py</cite> using py:class:<cite>espnet.nets.beam_search.BeamSearch</cite>.</p>
 <dl class="function">
 <dt id="espnet.asr.pytorch_backend.recog.recog_v2">
@@ -996,7 +1551,7 @@ only supports E2E and RNNLM</p>
 
 </div>
 <div class="section" id="espnet-asr-pytorch-backend-asr-mix">
-<span id="id9"></span><h2>espnet.asr.pytorch_backend.asr_mix<a class="headerlink" href="#espnet-asr-pytorch-backend-asr-mix" title="Permalink to this headline">¶</a></h2>
+<span id="id11"></span><h2>espnet.asr.pytorch_backend.asr_mix<a class="headerlink" href="#espnet-asr-pytorch-backend-asr-mix" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.pytorch_backend.asr_mix"></span><p>This script is used for multi-speaker speech recognition.</p>
 <dl class="simple">
 <dt>Copyright 2017 Johns Hopkins University (Shinji Watanabe)</dt><dd><p>Apache 2.0  (<a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>)</p>
@@ -1042,7 +1597,7 @@ only supports E2E and RNNLM</p>
 
 </div>
 <div class="section" id="espnet-asr-pytorch-backend-asr">
-<span id="id10"></span><h2>espnet.asr.pytorch_backend.asr<a class="headerlink" href="#espnet-asr-pytorch-backend-asr" title="Permalink to this headline">¶</a></h2>
+<span id="id12"></span><h2>espnet.asr.pytorch_backend.asr<a class="headerlink" href="#espnet-asr-pytorch-backend-asr" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.asr.pytorch_backend.asr"></span><p>Training/decoding definition for the speech recognition task.</p>
 <dl class="class">
 <dt id="espnet.asr.pytorch_backend.asr.CustomConverter">
@@ -1167,6 +1722,166 @@ updates of parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="espnet-asr-pytorch-backend-asr-init-pre-decoding">
+<span id="id13"></span><h2>espnet.asr.pytorch_backend.asr_init_pre_decoding<a class="headerlink" href="#espnet-asr-pytorch-backend-asr-init-pre-decoding" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.asr.pytorch_backend.asr_init_pre_decoding"></span><p>Finetuning methods.</p>
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.filter_modules">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">filter_modules</code><span class="sig-paren">(</span><em class="sig-param">model_state_dict</em>, <em class="sig-param">modules</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#filter_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.filter_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter non-matched modules in module_state_dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_state_dict</strong> (<em>OrderedDict</em>) – trained model state_dict</p></li>
+<li><p><strong>modules</strong> (<em>list</em>) – specified module list for transfer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the update module list</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>new_mods (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.freeze_modules">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">freeze_modules</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">modules</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#freeze_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.freeze_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Freeze model parameters according to modules list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – main model to update</p></li>
+<li><p><strong>modules</strong> (<em>list</em>) – specified module list for freezing</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated model
+model_params (filter): filtered model parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>model (torch.nn.Module)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.get_partial_lm_state_dict">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">get_partial_lm_state_dict</code><span class="sig-paren">(</span><em class="sig-param">model_state_dict</em>, <em class="sig-param">modules</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#get_partial_lm_state_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.get_partial_lm_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create compatible ASR state_dict from model_state_dict (LM).</p>
+<p>The keys for specified modules are modified to match ASR decoder modules keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_state_dict</strong> (<em>OrderedDict</em>) – trained model state_dict</p></li>
+<li><p><strong>modules</strong> (<em>list</em>) – specified module list for transfer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the updated state_dict
+new_mods (list): the updated module list</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>new_state_dict (OrderedDict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.get_partial_state_dict">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">get_partial_state_dict</code><span class="sig-paren">(</span><em class="sig-param">model_state_dict</em>, <em class="sig-param">modules</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#get_partial_state_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.get_partial_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create state_dict with specified modules matching input model modules.</p>
+<p>Note that get_partial_lm_state_dict is used if a LM specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_state_dict</strong> (<em>OrderedDict</em>) – trained model state_dict</p></li>
+<li><p><strong>modules</strong> (<em>list</em>) – specified module list for transfer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the updated state_dict</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>new_state_dict (OrderedDict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.get_trained_model_state_dict">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">get_trained_model_state_dict</code><span class="sig-paren">(</span><em class="sig-param">model_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#get_trained_model_state_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.get_trained_model_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the trained model state dict for pre-initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model_path</strong> (<em>str</em>) – Path to model.***.best</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the loaded model state_dict
+(bool): Boolean defining whether the model is an LM</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>model.state_dict() (OrderedDict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.load_trained_model">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">load_trained_model</code><span class="sig-paren">(</span><em class="sig-param">model_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#load_trained_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.load_trained_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the trained model for recognition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model_path</strong> (<em>str</em>) – Path to model.***.best</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.load_trained_modules">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">load_trained_modules</code><span class="sig-paren">(</span><em class="sig-param">idim</em>, <em class="sig-param">odim</em>, <em class="sig-param">args</em>, <em class="sig-param">interface=&lt;class 'espnet.nets.asr_interface.ASRInterface'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#load_trained_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.load_trained_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load model encoder or/and decoder modules with ESPNET pre-trained model(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idim</strong> (<em>int</em>) – initial input dimension.</p></li>
+<li><p><strong>odim</strong> (<em>int</em>) – initial output dimension.</p></li>
+<li><p><strong>args</strong> (<em>Namespace</em>) – The initial model arguments.</p></li>
+<li><p><strong>interface</strong> (<em>Interface</em>) – ASRInterface or STInterface or TTSInterface.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The model with pretrained modules.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>model (torch.nn.Module)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.asr.pytorch_backend.asr_init_pre_decoding.transfer_verification">
+<code class="sig-prename descclassname">espnet.asr.pytorch_backend.asr_init_pre_decoding.</code><code class="sig-name descname">transfer_verification</code><span class="sig-paren">(</span><em class="sig-param">model_state_dict</em>, <em class="sig-param">partial_state_dict</em>, <em class="sig-param">modules</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/asr/pytorch_backend/asr_init_pre_decoding.html#transfer_verification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.asr.pytorch_backend.asr_init_pre_decoding.transfer_verification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify tuples (key, shape) for input model modules match specified modules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_state_dict</strong> (<em>OrderedDict</em>) – the initial model state_dict</p></li>
+<li><p><strong>partial_state_dict</strong> (<em>OrderedDict</em>) – the trained model state_dict</p></li>
+<li><p><strong>modules</strong> (<em>list</em>) – specified module list for transfer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>allow transfer</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(boolean)</p>
 </dd>
 </dl>
 </dd></dl>

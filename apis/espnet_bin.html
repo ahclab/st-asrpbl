@@ -156,6 +156,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#asr-recog-pre-decoding-py">asr_recog_pre_decoding.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#asr-train-py">asr_train.py</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 </ul>
@@ -173,6 +177,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#st-train-py">st_train.py</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#st-train-pbl-py">st_train_pbl.py</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 </ul>
 </li>
@@ -299,11 +307,13 @@
 <li><p><a class="reference internal" href="#asr-align-py"><span class="std std-ref">asr_align.py</span></a>: Align text to audio using CTC segmentation.using a pre-trained speech recognition model.</p></li>
 <li><p><a class="reference internal" href="#asr-enhance-py"><span class="std std-ref">asr_enhance.py</span></a>: Enhance noisy speech for speech recognition</p></li>
 <li><p><a class="reference internal" href="#asr-recog-py"><span class="std std-ref">asr_recog.py</span></a>: Transcribe text from speech using a speech recognition model on one CPU or GPU</p></li>
+<li><p><a class="reference internal" href="#asr-recog-pre-decoding-py"><span class="std std-ref">asr_recog_pre_decoding.py</span></a>: Transcribe text from speech using a speech recognition model on one CPU or GPU</p></li>
 <li><p><a class="reference internal" href="#asr-train-py"><span class="std std-ref">asr_train.py</span></a>: Train an automatic speech recognition (ASR) model on one CPU, one or multiple GPUs</p></li>
 <li><p><a class="reference internal" href="#lm-train-py"><span class="std std-ref">lm_train.py</span></a>: Train a new language model on one CPU or one GPU</p></li>
 <li><p><a class="reference internal" href="#mt-train-py"><span class="std std-ref">mt_train.py</span></a>: Train a neural machine translation (NMT) model on one CPU, one or multiple GPUs</p></li>
 <li><p><a class="reference internal" href="#mt-trans-py"><span class="std std-ref">mt_trans.py</span></a>: Translate text from speech using a speech translation model on one CPU or GPU</p></li>
 <li><p><a class="reference internal" href="#st-train-py"><span class="std std-ref">st_train.py</span></a>: Train a speech translation (ST) model on one CPU, one or multiple GPUs</p></li>
+<li><p><a class="reference internal" href="#st-train-pbl-py"><span class="std std-ref">st_train_pbl.py</span></a>: Train a speech translation (ST) model on one CPU, one or multiple GPUs</p></li>
 <li><p><a class="reference internal" href="#st-trans-py"><span class="std std-ref">st_trans.py</span></a>: Translate text from speech using a speech translation model on one CPU or GPU</p></li>
 <li><p><a class="reference internal" href="#tts-decode-py"><span class="std std-ref">tts_decode.py</span></a>: Synthesize speech from text using a TTS model on one CPU</p></li>
 <li><p><a class="reference internal" href="#tts-train-py"><span class="std std-ref">tts_train.py</span></a>: Train a new text-to-speech (TTS) model on one CPU, one or multiple GPUs</p></li>
@@ -790,8 +800,236 @@ the decoding speed of part scorer is musch faster than full one</p>
 </dl>
 </div>
 </div>
+<div class="section" id="asr-recog-pre-decoding-py">
+<span id="id5"></span><h2>asr_recog_pre_decoding.py<a class="headerlink" href="#asr-recog-pre-decoding-py" title="Permalink to this headline">¶</a></h2>
+<p><p>Transcribe text from speech using a speech recognition model on one CPU or GPU</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">asr_recog_pre_decoding</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">dtype</span> <span class="p">{</span><span class="n">float16</span><span class="p">,</span><span class="n">float32</span><span class="p">,</span><span class="n">float64</span><span class="p">}]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">batchsize</span> <span class="n">BATCHSIZE</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="n">PREPROCESS_CONF</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">api</span> <span class="p">{</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">recog</span><span class="o">-</span><span class="n">json</span> <span class="n">RECOG_JSON</span><span class="p">]</span>
+                                 <span class="o">--</span><span class="n">result</span><span class="o">-</span><span class="n">label</span> <span class="n">RESULT_LABEL</span> <span class="o">--</span><span class="n">model</span> <span class="n">MODEL</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">conf</span> <span class="n">MODEL_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">spkrs</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">}]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">encs</span> <span class="n">NUM_ENCS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">nbest</span> <span class="n">NBEST</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">beam</span><span class="o">-</span><span class="n">size</span> <span class="n">BEAM_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">penalty</span> <span class="n">PENALTY</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">maxlenratio</span> <span class="n">MAXLENRATIO</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">minlenratio</span> <span class="n">MINLENRATIO</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">ctc</span><span class="o">-</span><span class="n">weight</span> <span class="n">CTC_WEIGHT</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">weights</span><span class="o">-</span><span class="n">ctc</span><span class="o">-</span><span class="n">dec</span> <span class="n">WEIGHTS_CTC_DEC</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">ctc</span><span class="o">-</span><span class="n">window</span><span class="o">-</span><span class="n">margin</span> <span class="n">CTC_WINDOW_MARGIN</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">score</span><span class="o">-</span><span class="n">norm</span><span class="o">-</span><span class="n">transducer</span> <span class="p">[</span><span class="n">SCORE_NORM_TRANSDUCER</span><span class="p">]]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span> <span class="n">RNNLM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span><span class="o">-</span><span class="n">conf</span> <span class="n">RNNLM_CONF</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">word</span><span class="o">-</span><span class="n">rnnlm</span> <span class="n">WORD_RNNLM</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">word</span><span class="o">-</span><span class="n">rnnlm</span><span class="o">-</span><span class="n">conf</span> <span class="n">WORD_RNNLM_CONF</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">word</span><span class="o">-</span><span class="nb">dict</span> <span class="n">WORD_DICT</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">lm</span><span class="o">-</span><span class="n">weight</span> <span class="n">LM_WEIGHT</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">ngram</span><span class="o">-</span><span class="n">model</span> <span class="n">NGRAM_MODEL</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">ngram</span><span class="o">-</span><span class="n">weight</span> <span class="n">NGRAM_WEIGHT</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">ngram</span><span class="o">-</span><span class="n">scorer</span> <span class="p">{</span><span class="n">full</span><span class="p">,</span><span class="n">part</span><span class="p">}]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">mode</span> <span class="p">{</span><span class="n">window</span><span class="p">,</span><span class="n">segment</span><span class="p">}]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">window</span> <span class="n">STREAMING_WINDOW</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">blank</span><span class="o">-</span><span class="n">dur</span> <span class="n">STREAMING_MIN_BLANK_DUR</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">onset</span><span class="o">-</span><span class="n">margin</span> <span class="n">STREAMING_ONSET_MARGIN</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">streaming</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="n">margin</span> <span class="n">STREAMING_OFFSET_MARGIN</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">maskctc</span><span class="o">-</span><span class="n">n</span><span class="o">-</span><span class="n">iterations</span> <span class="n">MASKCTC_N_ITERATIONS</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">maskctc</span><span class="o">-</span><span class="n">probability</span><span class="o">-</span><span class="n">threshold</span> <span class="n">MASKCTC_PROBABILITY_THRESHOLD</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">decode</span><span class="o">-</span><span class="nb">dir</span> <span class="n">DECODE_DIR</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>--config</kbd></dt>
+<dd><p>Config file path</p>
+</dd>
+<dt><kbd>--config2</kbd></dt>
+<dd><p>Second config file path that overwrites the settings in <cite>–config</cite></p>
+</dd>
+<dt><kbd>--config3</kbd></dt>
+<dd><p>Third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite></p>
+</dd>
+<dt><kbd>--ngpu</kbd></dt>
+<dd><p>Number of GPUs</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--dtype</kbd></dt>
+<dd><p>Possible choices: float16, float32, float64</p>
+<p>Float precision (only available in –api v2)</p>
+<p>Default: “float32”</p>
+</dd>
+<dt><kbd>--backend</kbd></dt>
+<dd><p>Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p>Default: “chainer”</p>
+</dd>
+<dt><kbd>--debugmode</kbd></dt>
+<dd><p>Debugmode</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--seed</kbd></dt>
+<dd><p>Random seed</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--verbose, -V</kbd></dt>
+<dd><p>Verbose option</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--batchsize</kbd></dt>
+<dd><p>Batch size for beam search (0: means no batch processing)</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--preprocess-conf</kbd></dt>
+<dd><p>The configuration file for the pre-processing</p>
+</dd>
+<dt><kbd>--api</kbd></dt>
+<dd><p>Possible choices: v1, v2</p>
+<p>Beam search APIs v1: Default API. It only supports the ASRInterface.recognize method and DefaultRNNLM. v2: Experimental API. It supports any models that implements ScorerInterface.</p>
+<p>Default: “v1”</p>
+</dd>
+<dt><kbd>--recog-json</kbd></dt>
+<dd><p>Filename of recognition data (json)</p>
+</dd>
+<dt><kbd>--result-label</kbd></dt>
+<dd><p>Filename of result label data (json)</p>
+</dd>
+<dt><kbd>--model</kbd></dt>
+<dd><p>Model file parameters to read</p>
+</dd>
+<dt><kbd>--model-conf</kbd></dt>
+<dd><p>Model config file</p>
+</dd>
+<dt><kbd>--num-spkrs</kbd></dt>
+<dd><p>Possible choices: 1, 2</p>
+<p>Number of speakers in the speech</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--num-encs</kbd></dt>
+<dd><p>Number of encoders in the model.</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--nbest</kbd></dt>
+<dd><p>Output N-best hypotheses</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--beam-size</kbd></dt>
+<dd><p>Beam size</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--penalty</kbd></dt>
+<dd><p>Incertion penalty</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--maxlenratio</kbd></dt>
+<dd><dl class="simple">
+<dt>Input length ratio to obtain max output length.</dt><dd><p>If maxlenratio=0.0 (default), it uses a end-detect function
+to automatically find maximum hypothesis lengths</p>
+</dd>
+</dl>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--minlenratio</kbd></dt>
+<dd><p>Input length ratio to obtain min output length</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--ctc-weight</kbd></dt>
+<dd><p>CTC weight in joint decoding</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--weights-ctc-dec</kbd></dt>
+<dd><p>ctc weight assigned to each encoder during decoding.[in multi-encoder mode only]</p>
+</dd>
+<dt><kbd>--ctc-window-margin</kbd></dt>
+<dd><dl class="simple">
+<dt>Use CTC window with margin parameter to accelerate</dt><dd><p>CTC/attention decoding especially on GPU. Smaller magin
+makes decoding faster, but may increase search errors.
+If margin=0 (default), this function is disabled</p>
+</dd>
+</dl>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--score-norm-transducer</kbd></dt>
+<dd><p>Normalize transducer scores by length</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--rnnlm</kbd></dt>
+<dd><p>RNNLM model file to read</p>
+</dd>
+<dt><kbd>--rnnlm-conf</kbd></dt>
+<dd><p>RNNLM model config file to read</p>
+</dd>
+<dt><kbd>--word-rnnlm</kbd></dt>
+<dd><p>Word RNNLM model file to read</p>
+</dd>
+<dt><kbd>--word-rnnlm-conf</kbd></dt>
+<dd><p>Word RNNLM model config file to read</p>
+</dd>
+<dt><kbd>--word-dict</kbd></dt>
+<dd><p>Word list to read</p>
+</dd>
+<dt><kbd>--lm-weight</kbd></dt>
+<dd><p>RNNLM weight</p>
+<p>Default: 0.1</p>
+</dd>
+<dt><kbd>--ngram-model</kbd></dt>
+<dd><p>ngram model file to read</p>
+</dd>
+<dt><kbd>--ngram-weight</kbd></dt>
+<dd><p>ngram weight</p>
+<p>Default: 0.1</p>
+</dd>
+<dt><kbd>--ngram-scorer</kbd></dt>
+<dd><p>Possible choices: full, part</p>
+<dl class="simple">
+<dt>if the ngram is set as a part scorer, similar with CTC scorer,</dt><dd><p>ngram scorer only scores topK hypethesis.
+if the ngram is set as full scorer, ngram scorer scores all hypthesis
+the decoding speed of part scorer is musch faster than full one</p>
+</dd>
+</dl>
+<p>Default: “part”</p>
+</dd>
+<dt><kbd>--streaming-mode</kbd></dt>
+<dd><p>Possible choices: window, segment</p>
+<dl class="simple">
+<dt>Use streaming recognizer for inference.</dt><dd><p><cite>–batchsize</cite> must be set to 0 to enable this mode</p>
+</dd>
+</dl>
+</dd>
+<dt><kbd>--streaming-window</kbd></dt>
+<dd><p>Window size</p>
+<p>Default: 10</p>
+</dd>
+<dt><kbd>--streaming-min-blank-dur</kbd></dt>
+<dd><p>Minimum blank duration threshold</p>
+<p>Default: 10</p>
+</dd>
+<dt><kbd>--streaming-onset-margin</kbd></dt>
+<dd><p>Onset margin</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--streaming-offset-margin</kbd></dt>
+<dd><p>Offset margin</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--maskctc-n-iterations</kbd></dt>
+<dd><p>Number of decoding iterations.For Mask CTC, set 0 to predict 1 mask/iter.</p>
+<p>Default: 10</p>
+</dd>
+<dt><kbd>--maskctc-probability-threshold</kbd></dt>
+<dd><p>Threshold probability for CTC output</p>
+<p>Default: 0.999</p>
+</dd>
+<dt><kbd>--decode-dir</kbd></dt>
+<dd><p>decoder_dir</p>
+</dd>
+</dl>
+</div>
+</div>
 <div class="section" id="asr-train-py">
-<span id="id5"></span><h2>asr_train.py<a class="headerlink" href="#asr-train-py" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2>asr_train.py<a class="headerlink" href="#asr-train-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Train an automatic speech recognition (ASR) model on one CPU, one or multiple GPUs</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">asr_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -1224,7 +1462,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="lm-train-py">
-<span id="id6"></span><h2>lm_train.py<a class="headerlink" href="#lm-train-py" title="Permalink to this headline">¶</a></h2>
+<span id="id7"></span><h2>lm_train.py<a class="headerlink" href="#lm-train-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Train a new language model on one CPU or one GPU</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lm_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -1359,7 +1597,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="mt-train-py">
-<span id="id7"></span><h2>mt_train.py<a class="headerlink" href="#mt-train-py" title="Permalink to this headline">¶</a></h2>
+<span id="id8"></span><h2>mt_train.py<a class="headerlink" href="#mt-train-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Train a neural machine translation (NMT) model on one CPU, one or multiple GPUs</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mt_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -1663,7 +1901,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="mt-trans-py">
-<span id="id8"></span><h2>mt_trans.py<a class="headerlink" href="#mt-trans-py" title="Permalink to this headline">¶</a></h2>
+<span id="id9"></span><h2>mt_trans.py<a class="headerlink" href="#mt-trans-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Translate text from speech using a speech translation model on one CPU or GPU</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">mt_trans</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -1773,7 +2011,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="st-train-py">
-<span id="id9"></span><h2>st_train.py<a class="headerlink" href="#st-train-py" title="Permalink to this headline">¶</a></h2>
+<span id="id10"></span><h2>st_train.py<a class="headerlink" href="#st-train-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Train a speech translation (ST) model on one CPU, one or multiple GPUs</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">st_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -2138,8 +2376,394 @@ to automatically find maximum hypothesis lengths</p>
 </dl>
 </div>
 </div>
+<div class="section" id="st-train-pbl-py">
+<span id="id11"></span><h2>st_train_pbl.py<a class="headerlink" href="#st-train-pbl-py" title="Permalink to this headline">¶</a></h2>
+<p><p>Train a speech translation (ST) model on one CPU, one or multiple GPUs</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">st_train_pbl</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">config3</span> <span class="n">CONFIG3</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ngpu</span> <span class="n">NGPU</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">train</span><span class="o">-</span><span class="n">dtype</span> <span class="p">{</span><span class="n">float16</span><span class="p">,</span><span class="n">float32</span><span class="p">,</span><span class="n">float64</span><span class="p">,</span><span class="n">O0</span><span class="p">,</span><span class="n">O1</span><span class="p">,</span><span class="n">O2</span><span class="p">,</span><span class="n">O3</span><span class="p">}]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">backend</span> <span class="p">{</span><span class="n">chainer</span><span class="p">,</span><span class="n">pytorch</span><span class="p">}]</span> <span class="o">--</span><span class="n">outdir</span> <span class="n">OUTDIR</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">debugmode</span> <span class="n">DEBUGMODE</span><span class="p">]</span> <span class="o">--</span><span class="nb">dict</span> <span class="n">DICT</span> <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">SEED</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">debugdir</span> <span class="n">DEBUGDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">resume</span> <span class="p">[</span><span class="n">RESUME</span><span class="p">]]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">minibatches</span> <span class="n">MINIBATCHES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span> <span class="n">VERBOSE</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">tensorboard</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="n">TENSORBOARD_DIR</span><span class="p">]]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">interval</span><span class="o">-</span><span class="n">iters</span> <span class="n">REPORT_INTERVAL_ITERS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">save</span><span class="o">-</span><span class="n">interval</span><span class="o">-</span><span class="n">iters</span> <span class="n">SAVE_INTERVAL_ITERS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">train</span><span class="o">-</span><span class="n">json</span> <span class="n">TRAIN_JSON</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">valid</span><span class="o">-</span><span class="n">json</span> <span class="n">VALID_JSON</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">module</span> <span class="n">MODEL_MODULE</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">ctc_type</span> <span class="p">{</span><span class="n">builtin</span><span class="p">,</span><span class="n">warpctc</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">mtlalpha</span> <span class="n">MTLALPHA</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">asr</span><span class="o">-</span><span class="n">weight</span> <span class="n">ASR_WEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mt</span><span class="o">-</span><span class="n">weight</span> <span class="n">MT_WEIGHT</span><span class="p">]</span>
+                       <span class="o">--</span><span class="n">lsm</span><span class="o">-</span><span class="n">weight</span><span class="o">-</span><span class="n">st</span> <span class="n">LSM_WEIGHT_ST</span> <span class="o">--</span><span class="n">lsm</span><span class="o">-</span><span class="n">weight</span><span class="o">-</span><span class="n">asr</span>
+                       <span class="n">LSM_WEIGHT_ASR</span> <span class="o">--</span><span class="n">lsm</span><span class="o">-</span><span class="n">weight</span><span class="o">-</span><span class="n">mt</span> <span class="n">LSM_WEIGHT_MT</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">cer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">wer</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">report</span><span class="o">-</span><span class="n">bleu</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">nbest</span> <span class="n">NBEST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">beam</span><span class="o">-</span><span class="n">size</span> <span class="n">BEAM_SIZE</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">penalty</span> <span class="n">PENALTY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxlenratio</span> <span class="n">MAXLENRATIO</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">minlenratio</span> <span class="n">MINLENRATIO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span> <span class="n">RNNLM</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">rnnlm</span><span class="o">-</span><span class="n">conf</span> <span class="n">RNNLM_CONF</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lm</span><span class="o">-</span><span class="n">weight</span> <span class="n">LM_WEIGHT</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">sym</span><span class="o">-</span><span class="n">space</span> <span class="n">SYM_SPACE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sym</span><span class="o">-</span><span class="n">blank</span> <span class="n">SYM_BLANK</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">sortagrad</span> <span class="p">[</span><span class="n">SORTAGRAD</span><span class="p">]]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">count</span> <span class="p">{</span><span class="n">auto</span><span class="p">,</span><span class="n">seq</span><span class="p">,</span><span class="nb">bin</span><span class="p">,</span><span class="n">frame</span><span class="p">}]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="n">BATCH_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">bins</span> <span class="n">BATCH_BINS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="ow">in</span> <span class="n">BATCH_FRAMES_IN</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="n">out</span> <span class="n">BATCH_FRAMES_OUT</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">frames</span><span class="o">-</span><span class="n">inout</span> <span class="n">BATCH_FRAMES_INOUT</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span><span class="o">-</span><span class="ow">in</span> <span class="n">ML</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxlen</span><span class="o">-</span><span class="n">out</span> <span class="n">ML</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="nb">iter</span><span class="o">-</span><span class="n">processes</span> <span class="n">N_ITER_PROCESSES</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">conf</span> <span class="p">[</span><span class="n">PREPROCESS_CONF</span><span class="p">]]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">opt</span> <span class="p">{</span><span class="n">adadelta</span><span class="p">,</span><span class="n">adam</span><span class="p">,</span><span class="n">noam</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">accum</span><span class="o">-</span><span class="n">grad</span> <span class="n">ACCUM_GRAD</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">eps</span> <span class="n">EPS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">eps</span><span class="o">-</span><span class="n">decay</span> <span class="n">EPS_DECAY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lr</span> <span class="n">LR</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">lr</span><span class="o">-</span><span class="n">decay</span> <span class="n">LR_DECAY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">weight</span><span class="o">-</span><span class="n">decay</span> <span class="n">WEIGHT_DECAY</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">criterion</span> <span class="p">{</span><span class="n">loss</span><span class="p">,</span><span class="n">acc</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">threshold</span> <span class="n">THRESHOLD</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">epochs</span> <span class="n">EPOCHS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">early</span><span class="o">-</span><span class="n">stop</span><span class="o">-</span><span class="n">criterion</span> <span class="p">[</span><span class="n">EARLY_STOP_CRITERION</span><span class="p">]]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">patience</span> <span class="p">[</span><span class="n">PATIENCE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">grad</span><span class="o">-</span><span class="n">clip</span> <span class="n">GRAD_CLIP</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">save</span><span class="o">-</span><span class="n">attention</span> <span class="n">NUM_SAVE_ATTENTION</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">save</span><span class="o">-</span><span class="n">ctc</span> <span class="n">NUM_SAVE_CTC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">grad</span><span class="o">-</span><span class="n">noise</span> <span class="n">GRAD_NOISE</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">context</span><span class="o">-</span><span class="n">residual</span> <span class="p">[</span><span class="n">CONTEXT_RESIDUAL</span><span class="p">]]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">enc</span><span class="o">-</span><span class="n">init</span> <span class="p">[</span><span class="n">ENC_INIT</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">enc</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">mods</span> <span class="n">ENC_INIT_MODS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">dec</span><span class="o">-</span><span class="n">init</span> <span class="p">[</span><span class="n">DEC_INIT</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dec</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">mods</span> <span class="n">DEC_INIT_MODS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">multilingual</span> <span class="n">MULTILINGUAL</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">replace</span><span class="o">-</span><span class="n">sos</span> <span class="n">REPLACE_SOS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">stats</span><span class="o">-</span><span class="n">file</span> <span class="n">STATS_FILE</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">apply</span><span class="o">-</span><span class="n">uttmvn</span> <span class="n">APPLY_UTTMVN</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">uttmvn</span><span class="o">-</span><span class="n">norm</span><span class="o">-</span><span class="n">means</span> <span class="n">UTTMVN_NORM_MEANS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">uttmvn</span><span class="o">-</span><span class="n">norm</span><span class="o">-</span><span class="nb">vars</span> <span class="n">UTTMVN_NORM_VARS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">fbank</span><span class="o">-</span><span class="n">fs</span> <span class="n">FBANK_FS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">mels</span> <span class="n">N_MELS</span><span class="p">]</span>
+                       <span class="p">[</span><span class="o">--</span><span class="n">fbank</span><span class="o">-</span><span class="n">fmin</span> <span class="n">FBANK_FMIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fbank</span><span class="o">-</span><span class="n">fmax</span> <span class="n">FBANK_FMAX</span><span class="p">]</span>
+                       <span class="o">--</span><span class="n">pre</span><span class="o">-</span><span class="n">decoding</span><span class="o">-</span><span class="nb">dir</span> <span class="n">PRE_DECODING_DIR</span> <span class="o">--</span><span class="n">soft</span><span class="o">-</span><span class="n">tgt</span><span class="o">-</span><span class="n">weight</span>
+                       <span class="n">SOFT_TGT_WEIGHT</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>--config</kbd></dt>
+<dd><p>config file path</p>
+</dd>
+<dt><kbd>--config2</kbd></dt>
+<dd><p>second config file path that overwrites the settings in <cite>–config</cite>.</p>
+</dd>
+<dt><kbd>--config3</kbd></dt>
+<dd><p>third config file path that overwrites the settings in <cite>–config</cite> and <cite>–config2</cite>.</p>
+</dd>
+<dt><kbd>--ngpu</kbd></dt>
+<dd><p>Number of GPUs. If not given, use all visible devices</p>
+</dd>
+<dt><kbd>--train-dtype</kbd></dt>
+<dd><p>Possible choices: float16, float32, float64, O0, O1, O2, O3</p>
+<p>Data type for training (only pytorch backend). O0,O1,.. flags require apex. See <a class="reference external" href="https://nvidia.github.io/apex/amp.html#opt-levels">https://nvidia.github.io/apex/amp.html#opt-levels</a></p>
+<p>Default: “float32”</p>
+</dd>
+<dt><kbd>--backend</kbd></dt>
+<dd><p>Possible choices: chainer, pytorch</p>
+<p>Backend library</p>
+<p>Default: “chainer”</p>
+</dd>
+<dt><kbd>--outdir</kbd></dt>
+<dd><p>Output directory</p>
+</dd>
+<dt><kbd>--debugmode</kbd></dt>
+<dd><p>Debugmode</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--dict</kbd></dt>
+<dd><p>Dictionary</p>
+</dd>
+<dt><kbd>--seed</kbd></dt>
+<dd><p>Random seed</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--debugdir</kbd></dt>
+<dd><p>Output directory for debugging</p>
+</dd>
+<dt><kbd>--resume, -r</kbd></dt>
+<dd><p>Resume the training from snapshot</p>
+<p>Default: “”</p>
+</dd>
+<dt><kbd>--minibatches, -N</kbd></dt>
+<dd><p>Process only N minibatches (for debug)</p>
+<p>Default: -1</p>
+</dd>
+<dt><kbd>--verbose, -V</kbd></dt>
+<dd><p>Verbose option</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--tensorboard-dir</kbd></dt>
+<dd><p>Tensorboard log dir path</p>
+</dd>
+<dt><kbd>--report-interval-iters</kbd></dt>
+<dd><p>Report interval iterations</p>
+<p>Default: 100</p>
+</dd>
+<dt><kbd>--save-interval-iters</kbd></dt>
+<dd><p>Save snapshot interval iterations</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--train-json</kbd></dt>
+<dd><p>Filename of train label data (json)</p>
+</dd>
+<dt><kbd>--valid-json</kbd></dt>
+<dd><p>Filename of validation label data (json)</p>
+</dd>
+<dt><kbd>--model-module</kbd></dt>
+<dd><p>model defined module (default: espnet.nets.xxx_backend.e2e_st:E2E)</p>
+</dd>
+<dt><kbd>--ctc_type</kbd></dt>
+<dd><p>Possible choices: builtin, warpctc</p>
+<p>Type of CTC implementation to calculate loss.</p>
+<p>Default: “warpctc”</p>
+</dd>
+<dt><kbd>--mtlalpha</kbd></dt>
+<dd><p>Multitask learning coefficient, alpha:                                 alpha*ctc_loss + (1-alpha)*att_loss</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--asr-weight</kbd></dt>
+<dd><p>Multitask learning coefficient for ASR task, weight:  asr_weight*(alpha*ctc_loss + (1-alpha)*att_loss) + (1-asr_weight-mt_weight)*st_loss</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--mt-weight</kbd></dt>
+<dd><p>Multitask learning coefficient for MT task, weight:                                 mt_weight*mt_loss + (1-mt_weight-asr_weight)*st_loss</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--lsm-weight-st</kbd></dt>
+<dd><p>Label smoothing weight for ST-task</p>
+<p>Default: “”</p>
+</dd>
+<dt><kbd>--lsm-weight-asr</kbd></dt>
+<dd><p>Label smoothing weight for ASR-task</p>
+<p>Default: “”</p>
+</dd>
+<dt><kbd>--lsm-weight-mt</kbd></dt>
+<dd><p>Label smoothing weight for MT-task</p>
+<p>Default: “”</p>
+</dd>
+<dt><kbd>--report-cer</kbd></dt>
+<dd><p>Compute CER on development set</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--report-wer</kbd></dt>
+<dd><p>Compute WER on development set</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--report-bleu</kbd></dt>
+<dd><p>Compute BLEU on development set</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--nbest</kbd></dt>
+<dd><p>Output N-best hypotheses</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--beam-size</kbd></dt>
+<dd><p>Beam size</p>
+<p>Default: 4</p>
+</dd>
+<dt><kbd>--penalty</kbd></dt>
+<dd><p>Incertion penalty</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--maxlenratio</kbd></dt>
+<dd><dl class="simple">
+<dt>Input length ratio to obtain max output length.</dt><dd><p>If maxlenratio=0.0 (default), it uses a end-detect function
+to automatically find maximum hypothesis lengths</p>
+</dd>
+</dl>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--minlenratio</kbd></dt>
+<dd><p>Input length ratio to obtain min output length</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--rnnlm</kbd></dt>
+<dd><p>RNNLM model file to read</p>
+</dd>
+<dt><kbd>--rnnlm-conf</kbd></dt>
+<dd><p>RNNLM model config file to read</p>
+</dd>
+<dt><kbd>--lm-weight</kbd></dt>
+<dd><p>RNNLM weight.</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--sym-space</kbd></dt>
+<dd><p>Space symbol</p>
+<p>Default: “&lt;space&gt;”</p>
+</dd>
+<dt><kbd>--sym-blank</kbd></dt>
+<dd><p>Blank symbol</p>
+<p>Default: “&lt;blank&gt;”</p>
+</dd>
+<dt><kbd>--sortagrad</kbd></dt>
+<dd><p>How many epochs to use sortagrad for. 0 = deactivated, -1 = all epochs</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--batch-count</kbd></dt>
+<dd><p>Possible choices: auto, seq, bin, frame</p>
+<p>How to count batch_size. The default (auto) will find how to count by args.</p>
+<p>Default: “auto”</p>
+</dd>
+<dt><kbd>--batch-size, --batch-seqs, -b</kbd></dt>
+<dd><p>Maximum seqs in a minibatch (0 to disable)</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--batch-bins</kbd></dt>
+<dd><p>Maximum bins in a minibatch (0 to disable)</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--batch-frames-in</kbd></dt>
+<dd><p>Maximum input frames in a minibatch (0 to disable)</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--batch-frames-out</kbd></dt>
+<dd><p>Maximum output frames in a minibatch (0 to disable)</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--batch-frames-inout</kbd></dt>
+<dd><p>Maximum input+output frames in a minibatch (0 to disable)</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--maxlen-in, --batch-seq-maxlen-in</kbd></dt>
+<dd><p>When –batch-count=seq, batch size is reduced if the input sequence length &gt; ML.</p>
+<p>Default: 800</p>
+</dd>
+<dt><kbd>--maxlen-out, --batch-seq-maxlen-out</kbd></dt>
+<dd><p>When –batch-count=seq, batch size is reduced if the output sequence length &gt; ML</p>
+<p>Default: 150</p>
+</dd>
+<dt><kbd>--n-iter-processes</kbd></dt>
+<dd><p>Number of processes of iterator</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>--preprocess-conf</kbd></dt>
+<dd><p>The configuration file for the pre-processing</p>
+</dd>
+<dt><kbd>--opt</kbd></dt>
+<dd><p>Possible choices: adadelta, adam, noam</p>
+<p>Optimizer</p>
+<p>Default: “adadelta”</p>
+</dd>
+<dt><kbd>--accum-grad</kbd></dt>
+<dd><p>Number of gradient accumuration</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--eps</kbd></dt>
+<dd><p>Epsilon constant for optimizer</p>
+<p>Default: 1e-08</p>
+</dd>
+<dt><kbd>--eps-decay</kbd></dt>
+<dd><p>Decaying ratio of epsilon</p>
+<p>Default: 0.01</p>
+</dd>
+<dt><kbd>--lr</kbd></dt>
+<dd><p>Learning rate for optimizer</p>
+<p>Default: 0.001</p>
+</dd>
+<dt><kbd>--lr-decay</kbd></dt>
+<dd><p>Decaying ratio of learning rate</p>
+<p>Default: 1.0</p>
+</dd>
+<dt><kbd>--weight-decay</kbd></dt>
+<dd><p>Weight decay ratio</p>
+<p>Default: 0.0</p>
+</dd>
+<dt><kbd>--criterion</kbd></dt>
+<dd><p>Possible choices: loss, acc</p>
+<p>Criterion to perform epsilon decay</p>
+<p>Default: “acc”</p>
+</dd>
+<dt><kbd>--threshold</kbd></dt>
+<dd><p>Threshold to stop iteration</p>
+<p>Default: 0.0001</p>
+</dd>
+<dt><kbd>--epochs, -e</kbd></dt>
+<dd><p>Maximum number of epochs</p>
+<p>Default: 30</p>
+</dd>
+<dt><kbd>--early-stop-criterion</kbd></dt>
+<dd><p>Value to monitor to trigger an early stopping of the training</p>
+<p>Default: “validation/main/acc”</p>
+</dd>
+<dt><kbd>--patience</kbd></dt>
+<dd><p>Number of epochs to wait without improvement before stopping the training</p>
+<p>Default: 3</p>
+</dd>
+<dt><kbd>--grad-clip</kbd></dt>
+<dd><p>Gradient norm threshold to clip</p>
+<p>Default: 5</p>
+</dd>
+<dt><kbd>--num-save-attention</kbd></dt>
+<dd><p>Number of samples of attention to be saved</p>
+<p>Default: 3</p>
+</dd>
+<dt><kbd>--num-save-ctc</kbd></dt>
+<dd><p>Number of samples of CTC probability to be saved</p>
+<p>Default: 3</p>
+</dd>
+<dt><kbd>--grad-noise</kbd></dt>
+<dd><p>The flag to switch to use noise injection to gradients during training</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--context-residual</kbd></dt>
+<dd><p>The flag to switch to use context vector residual in the decoder network</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--enc-init</kbd></dt>
+<dd><p>Pre-trained ASR model to initialize encoder.</p>
+</dd>
+<dt><kbd>--enc-init-mods</kbd></dt>
+<dd><p>List of encoder modules to initialize, separated by a comma.</p>
+<p>Default: enc.enc.</p>
+</dd>
+<dt><kbd>--dec-init</kbd></dt>
+<dd><p>Pre-trained ASR, MT or LM model to initialize decoder.</p>
+</dd>
+<dt><kbd>--dec-init-mods</kbd></dt>
+<dd><p>List of decoder modules to initialize, separated by a comma.</p>
+<p>Default: att., dec.</p>
+</dd>
+<dt><kbd>--multilingual</kbd></dt>
+<dd><p>Prepend target language ID to the source sentence.  Both source/target language IDs must be prepend in the pre-processing stage.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--replace-sos</kbd></dt>
+<dd><p>Replace &lt;sos&gt; in the decoder with a target language ID                               (the first token in the target sequence)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--stats-file</kbd></dt>
+<dd><p>The stats file for the feature normalization</p>
+</dd>
+<dt><kbd>--apply-uttmvn</kbd></dt>
+<dd><p>Apply utterance level mean variance normalization.</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--uttmvn-norm-means</kbd></dt>
+<dd><p>Default: True</p>
+</dd>
+<dt><kbd>--uttmvn-norm-vars</kbd></dt>
+<dd><p>Default: False</p>
+</dd>
+<dt><kbd>--fbank-fs</kbd></dt>
+<dd><p>The sample frequency used for the mel-fbank creation.</p>
+<p>Default: 16000</p>
+</dd>
+<dt><kbd>--n-mels</kbd></dt>
+<dd><p>The number of mel-frequency bins.</p>
+<p>Default: 80</p>
+</dd>
+<dt><kbd>--fbank-fmin</kbd></dt>
+<dd><p>Default: 0.0</p>
+</dd>
+<dt><kbd>--fbank-fmax</kbd></dt>
+<dd></dd>
+<dt><kbd>--pre-decoding-dir</kbd></dt>
+<dd><p>dirpath includes hypothesis and local_scores_list by pre_decoding</p>
+</dd>
+<dt><kbd>--soft-tgt-weight</kbd></dt>
+<dd><p>soft-tgt-weight for asrpbl (0.0-1.0)</p>
+</dd>
+</dl>
+</div>
+</div>
 <div class="section" id="st-trans-py">
-<span id="id10"></span><h2>st_trans.py<a class="headerlink" href="#st-trans-py" title="Permalink to this headline">¶</a></h2>
+<span id="id12"></span><h2>st_trans.py<a class="headerlink" href="#st-trans-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Translate text from speech using a speech translation model on one CPU or GPU</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">st_trans</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -2245,7 +2869,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="tts-decode-py">
-<span id="id11"></span><h2>tts_decode.py<a class="headerlink" href="#tts-decode-py" title="Permalink to this headline">¶</a></h2>
+<span id="id13"></span><h2>tts_decode.py<a class="headerlink" href="#tts-decode-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Synthesize speech from text using a TTS model on one CPU</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">tts_decode</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -2352,7 +2976,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="tts-train-py">
-<span id="id12"></span><h2>tts_train.py<a class="headerlink" href="#tts-train-py" title="Permalink to this headline">¶</a></h2>
+<span id="id14"></span><h2>tts_train.py<a class="headerlink" href="#tts-train-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Train a new text-to-speech (TTS) model on one CPU, one or multiple GPUs</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">tts_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -2580,7 +3204,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="vc-decode-py">
-<span id="id13"></span><h2>vc_decode.py<a class="headerlink" href="#vc-decode-py" title="Permalink to this headline">¶</a></h2>
+<span id="id15"></span><h2>vc_decode.py<a class="headerlink" href="#vc-decode-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Converting speech using a VC model on one CPU</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">vc_decode</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>
@@ -2682,7 +3306,7 @@ to automatically find maximum hypothesis lengths</p>
 </div>
 </div>
 <div class="section" id="vc-train-py">
-<span id="id14"></span><h2>vc_train.py<a class="headerlink" href="#vc-train-py" title="Permalink to this headline">¶</a></h2>
+<span id="id16"></span><h2>vc_train.py<a class="headerlink" href="#vc-train-py" title="Permalink to this headline">¶</a></h2>
 <p><p>Train a new voice conversion (VC) model on one CPU, one or multiple GPUs</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">vc_train</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config2</span> <span class="n">CONFIG2</span><span class="p">]</span>

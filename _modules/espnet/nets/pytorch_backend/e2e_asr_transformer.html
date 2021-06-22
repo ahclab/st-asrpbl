@@ -739,7 +739,238 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">CTC</span><span class="p">)</span> <span class="ow">and</span> <span class="n">m</span><span class="o">.</span><span class="n">probs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">probs</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">ret</span></div></div>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="c1"># [ADD] based on recognize</span>
+<div class="viewcode-block" id="E2E.recognize_pre_decoding"><a class="viewcode-back" href="../../../../_gen/espnet.nets.html#espnet.nets.pytorch_backend.e2e_asr_transformer.E2E.recognize_pre_decoding">[docs]</a>    <span class="k">def</span> <span class="nf">recognize_pre_decoding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">recog_args</span><span class="p">,</span> <span class="n">char_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rnnlm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_jit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recognize input speech.</span>
+
+<span class="sd">        :param ndnarray x: input acoustic feature (B, T, D) or (T, D)</span>
+<span class="sd">        :param Namespace recog_args: argment Namespace contraining options</span>
+<span class="sd">        :param list char_list: list of characters</span>
+<span class="sd">        :param torch.nn.Module rnnlm: language model module</span>
+<span class="sd">        :return: N-best decoding results</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">enc_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtlalpha</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">recog_args</span><span class="o">.</span><span class="n">ctc_weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Set to pure CTC decoding mode.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtlalpha</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">ctc_weight</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">groupby</span>
+
+            <span class="n">lpz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctc</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">enc_output</span><span class="p">)</span>
+            <span class="n">collapsed_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">groupby</span><span class="p">(</span><span class="n">lpz</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="n">hyp</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blank</span><span class="p">,</span> <span class="n">collapsed_indices</span><span class="p">)]</span>
+            <span class="n">nbest_hyps</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;yseq&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sos</span><span class="p">]</span> <span class="o">+</span> <span class="n">hyp</span><span class="p">}]</span>
+            <span class="k">if</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">beam_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Pure CTC beam search is not implemented.&quot;</span><span class="p">)</span>
+            <span class="c1"># TODO(hirofumi0810): Implement beam search</span>
+            <span class="k">return</span> <span class="n">nbest_hyps</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtlalpha</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">ctc_weight</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">lpz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctc</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">enc_output</span><span class="p">)</span>
+            <span class="n">lpz</span> <span class="o">=</span> <span class="n">lpz</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lpz</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">enc_output</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;input lengths: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="c1"># search parms</span>
+        <span class="n">beam</span> <span class="o">=</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">beam_size</span>
+        <span class="n">penalty</span> <span class="o">=</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">penalty</span>
+        <span class="n">ctc_weight</span> <span class="o">=</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">ctc_weight</span>
+
+        <span class="c1"># preprare sos</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sos</span>
+        <span class="n">vy</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">maxlenratio</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">maxlen</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># maxlen &gt;= 1</span>
+            <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">recog_args</span><span class="o">.</span><span class="n">maxlenratio</span> <span class="o">*</span> <span class="n">h</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+        <span class="n">minlen</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recog_args</span><span class="o">.</span><span class="n">minlenratio</span> <span class="o">*</span> <span class="n">h</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;max output length: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">maxlen</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;min output length: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">minlen</span><span class="p">))</span>
+
+        <span class="c1"># initialize hypothesis</span>
+        <span class="k">if</span> <span class="n">rnnlm</span><span class="p">:</span>
+            <span class="n">hyp</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;yseq&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">y</span><span class="p">],</span> <span class="s2">&quot;rnnlm_prev&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hyp</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;yseq&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">y</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="n">lpz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ctc_prefix_score</span> <span class="o">=</span> <span class="n">CTCPrefixScore</span><span class="p">(</span><span class="n">lpz</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos</span><span class="p">,</span> <span class="n">numpy</span><span class="p">)</span>
+            <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;ctc_state_prev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctc_prefix_score</span><span class="o">.</span><span class="n">initial_state</span><span class="p">()</span>
+            <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;ctc_score_prev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="n">ctc_weight</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+                <span class="c1"># pre-pruning based on attention scores</span>
+                <span class="n">ctc_beam</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">lpz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">beam</span> <span class="o">*</span> <span class="n">CTC_SCORING_RATIO</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ctc_beam</span> <span class="o">=</span> <span class="n">lpz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">hyps</span> <span class="o">=</span> <span class="p">[</span><span class="n">hyp</span><span class="p">]</span>
+        <span class="n">ended_hyps</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="kn">import</span> <span class="nn">six</span>
+
+        <span class="n">traced_decoder</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># [ADD]</span>
+        <span class="c1"># posterior list of one sentence</span>
+        <span class="n">local_scores_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">maxlen</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;position &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+            <span class="n">hyps_best_kept</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">hyp</span> <span class="ow">in</span> <span class="n">hyps</span><span class="p">:</span>
+                <span class="n">vy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="c1"># get nbest local scores and their ids</span>
+                <span class="n">ys_mask</span> <span class="o">=</span> <span class="n">subsequent_mask</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">ys</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="c1"># FIXME: jit does not match non-jit result</span>
+                <span class="k">if</span> <span class="n">use_jit</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">traced_decoder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">traced_decoder</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">forward_one_step</span><span class="p">,</span> <span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">ys_mask</span><span class="p">,</span> <span class="n">enc_output</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="n">local_att_scores</span> <span class="o">=</span> <span class="n">traced_decoder</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">ys_mask</span><span class="p">,</span> <span class="n">enc_output</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">local_att_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">forward_one_step</span><span class="p">(</span>
+                        <span class="n">ys</span><span class="p">,</span> <span class="n">ys_mask</span><span class="p">,</span> <span class="n">enc_output</span>
+                    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">rnnlm</span><span class="p">:</span>
+                    <span class="n">rnnlm_state</span><span class="p">,</span> <span class="n">local_lm_scores</span> <span class="o">=</span> <span class="n">rnnlm</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;rnnlm_prev&quot;</span><span class="p">],</span> <span class="n">vy</span><span class="p">)</span>
+                    <span class="n">local_scores</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">local_att_scores</span> <span class="o">+</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">lm_weight</span> <span class="o">*</span> <span class="n">local_lm_scores</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">local_scores</span> <span class="o">=</span> <span class="n">local_att_scores</span>
+
+                <span class="k">if</span> <span class="n">lpz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">local_best_scores</span><span class="p">,</span> <span class="n">local_best_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span>
+                        <span class="n">local_att_scores</span><span class="p">,</span> <span class="n">ctc_beam</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">)</span>
+                    <span class="n">ctc_scores</span><span class="p">,</span> <span class="n">ctc_states</span> <span class="o">=</span> <span class="n">ctc_prefix_score</span><span class="p">(</span>
+                        <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">],</span> <span class="n">local_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;ctc_state_prev&quot;</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">local_scores</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ctc_weight</span><span class="p">)</span> <span class="o">*</span> <span class="n">local_att_scores</span><span class="p">[</span>
+                        <span class="p">:,</span> <span class="n">local_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">]</span> <span class="o">+</span> <span class="n">ctc_weight</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                        <span class="n">ctc_scores</span> <span class="o">-</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;ctc_score_prev&quot;</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rnnlm</span><span class="p">:</span>
+                        <span class="n">local_scores</span> <span class="o">+=</span> <span class="p">(</span>
+                            <span class="n">recog_args</span><span class="o">.</span><span class="n">lm_weight</span> <span class="o">*</span> <span class="n">local_lm_scores</span><span class="p">[:,</span> <span class="n">local_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="p">)</span>
+                    <span class="n">local_best_scores</span><span class="p">,</span> <span class="n">joint_best_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span>
+                        <span class="n">local_scores</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">)</span>
+                    <span class="n">local_best_ids</span> <span class="o">=</span> <span class="n">local_best_ids</span><span class="p">[:,</span> <span class="n">joint_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">local_best_scores</span><span class="p">,</span> <span class="n">local_best_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span>
+                        <span class="n">local_scores</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">)</span>
+                    <span class="c1"># [ADD]</span>
+                    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_scores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                    <span class="c1">#local_scores_list.append(local_scores[0])</span>
+                    <span class="n">local_scores_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_scores</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">beam</span><span class="p">):</span>
+                    <span class="n">new_hyp</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">local_best_scores</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">]))</span>
+                    <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">][:</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">]</span>
+                    <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">local_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">rnnlm</span><span class="p">:</span>
+                        <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;rnnlm_prev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rnnlm_state</span>
+                    <span class="k">if</span> <span class="n">lpz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;ctc_state_prev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctc_states</span><span class="p">[</span><span class="n">joint_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span>
+                        <span class="n">new_hyp</span><span class="p">[</span><span class="s2">&quot;ctc_score_prev&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctc_scores</span><span class="p">[</span><span class="n">joint_best_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]]</span>
+                    <span class="c1"># will be (2 x beam) hyps at most</span>
+                    <span class="n">hyps_best_kept</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_hyp</span><span class="p">)</span>
+
+                <span class="n">hyps_best_kept</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="n">hyps_best_kept</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)[:</span><span class="n">beam</span><span class="p">]</span>
+
+            <span class="c1"># sort and get nbest</span>
+            <span class="n">hyps</span> <span class="o">=</span> <span class="n">hyps_best_kept</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;number of pruned hypothes: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hyps</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">char_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;best hypo: &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">char_list</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">hyps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;yseq&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]])</span>
+                <span class="p">)</span>
+
+            <span class="c1"># add eos in the final loop to avoid that there are no ended hyps</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">maxlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;adding &lt;eos&gt; in the last postion in the loop&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">hyp</span> <span class="ow">in</span> <span class="n">hyps</span><span class="p">:</span>
+                    <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eos</span><span class="p">)</span>
+
+            <span class="c1"># add ended hypothes to a final list, and removed them from current hypothes</span>
+            <span class="c1"># (this will be a probmlem, number of hyps &lt; beam)</span>
+            <span class="n">remained_hyps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">hyp</span> <span class="ow">in</span> <span class="n">hyps</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos</span><span class="p">:</span>
+                    <span class="c1"># only store the sequence that has more than minlen outputs</span>
+                    <span class="c1"># also add penalty</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">minlen</span><span class="p">:</span>
+                        <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">penalty</span>
+                        <span class="k">if</span> <span class="n">rnnlm</span><span class="p">:</span>  <span class="c1"># Word LM needs to add final &lt;eos&gt; score</span>
+                            <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">lm_weight</span> <span class="o">*</span> <span class="n">rnnlm</span><span class="o">.</span><span class="n">final</span><span class="p">(</span>
+                                <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;rnnlm_prev&quot;</span><span class="p">]</span>
+                            <span class="p">)</span>
+                        <span class="n">ended_hyps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hyp</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">remained_hyps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hyp</span><span class="p">)</span>
+
+            <span class="c1"># end detection</span>
+            <span class="k">if</span> <span class="n">end_detect</span><span class="p">(</span><span class="n">ended_hyps</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">maxlenratio</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;end detected at </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="n">hyps</span> <span class="o">=</span> <span class="n">remained_hyps</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyps</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;remeined hypothes: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hyps</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;no hypothesis. Finish decoding.&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">char_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">hyp</span> <span class="ow">in</span> <span class="n">hyps</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;hypo: &quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">char_list</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">hyp</span><span class="p">[</span><span class="s2">&quot;yseq&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]])</span>
+                    <span class="p">)</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;number of ended hypothes: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ended_hyps</span><span class="p">)))</span>
+
+        <span class="n">nbest_hyps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ended_hyps</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span>
+            <span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ended_hyps</span><span class="p">),</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">nbest</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="c1"># check number of hypotheis</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nbest_hyps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;there is no N-best results, perform recognition &quot;</span>
+                <span class="s2">&quot;again with smaller minlenratio.&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># should copy becasuse Namespace will be overwritten globally</span>
+            <span class="n">recog_args</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">recog_args</span><span class="p">))</span>
+            <span class="n">recog_args</span><span class="o">.</span><span class="n">minlenratio</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">recog_args</span><span class="o">.</span><span class="n">minlenratio</span> <span class="o">-</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recognize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">recog_args</span><span class="p">,</span> <span class="n">char_list</span><span class="p">,</span> <span class="n">rnnlm</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;total log probability: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nbest_hyps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;score&quot;</span><span class="p">]))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;normalized log probability: &quot;</span>
+            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nbest_hyps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">nbest_hyps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;yseq&quot;</span><span class="p">]))</span>
+        <span class="p">)</span>
+        <span class="c1"># [ADD] local_scores_list (per one sentence)</span>
+        <span class="c1"># [BEFORE] return nbest_hyps</span>
+        <span class="k">return</span> <span class="n">nbest_hyps</span><span class="p">,</span> <span class="n">local_scores_list</span></div></div>
 </pre></div>
 
            </div>

@@ -37,6 +37,17 @@ espnet.bin.mt_train
     :show-inheritance:
 
 
+.. _espnet.bin.asr_recog_pre_decoding:
+
+espnet.bin.asr_recog_pre_decoding
+---------------------------------
+
+.. automodule:: espnet.bin.asr_recog_pre_decoding
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 .. _espnet.bin.mt_trans:
 
 espnet.bin.mt_trans
@@ -65,6 +76,17 @@ espnet.bin.__init__
 -------------------
 
 .. automodule:: espnet.bin.__init__
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. _espnet.bin.st_train_pbl:
+
+espnet.bin.st_train_pbl
+-----------------------
+
+.. automodule:: espnet.bin.st_train_pbl
     :members:
     :undoc-members:
     :show-inheritance:

@@ -576,6 +576,17 @@ espnet.nets.pytorch_backend.e2e_asr_conformer
     :show-inheritance:
 
 
+.. _espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl:
+
+espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl
+-----------------------------------------------------
+
+.. automodule:: espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 .. _espnet.nets.pytorch_backend.e2e_asr_transducer:
 
 espnet.nets.pytorch_backend.e2e_asr_transducer
@@ -714,6 +725,17 @@ espnet.nets.pytorch_backend.e2e_mt_transformer
 ----------------------------------------------
 
 .. automodule:: espnet.nets.pytorch_backend.e2e_mt_transformer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. _espnet.nets.pytorch_backend.e2e_asr_transformer_pre_decoding:
+
+espnet.nets.pytorch_backend.e2e_asr_transformer_pre_decoding
+------------------------------------------------------------
+
+.. automodule:: espnet.nets.pytorch_backend.e2e_asr_transformer_pre_decoding
     :members:
     :undoc-members:
     :show-inheritance:
@@ -1341,6 +1363,17 @@ espnet.nets.pytorch_backend.transformer.multi_layer_conv
 --------------------------------------------------------
 
 .. automodule:: espnet.nets.pytorch_backend.transformer.multi_layer_conv
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. _espnet.nets.pytorch_backend.transformer.posterior_based_loss:
+
+espnet.nets.pytorch_backend.transformer.posterior_based_loss
+------------------------------------------------------------
+
+.. automodule:: espnet.nets.pytorch_backend.transformer.posterior_based_loss
     :members:
     :undoc-members:
     :show-inheritance:

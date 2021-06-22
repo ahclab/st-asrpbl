@@ -15,6 +15,17 @@ espnet.st.__init__
     :show-inheritance:
 
 
+.. _espnet.st.pytorch_backend.st_pbl:
+
+espnet.st.pytorch_backend.st_pbl
+--------------------------------
+
+.. automodule:: espnet.st.pytorch_backend.st_pbl
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 .. _espnet.st.pytorch_backend.__init__:
 
 espnet.st.pytorch_backend.__init__

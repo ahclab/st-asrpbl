@@ -117,9 +117,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-st-train">espnet.bin.st_train</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-tts-train">espnet.bin.tts_train</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-mt-train">espnet.bin.mt_train</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-bin-asr-recog-pre-decoding">espnet.bin.asr_recog_pre_decoding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-mt-trans">espnet.bin.mt_trans</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-vc-train">espnet.bin.vc_train</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-init">espnet.bin.__init__</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-bin-st-train-pbl">espnet.bin.st_train_pbl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-asr-train">espnet.bin.asr_train</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-lm-train">espnet.bin.lm_train</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-bin-st-trans">espnet.bin.st_trans</a></li>
@@ -305,8 +307,24 @@
 </dd></dl>
 
 </div>
+<div class="section" id="espnet-bin-asr-recog-pre-decoding">
+<span id="id4"></span><h2>espnet.bin.asr_recog_pre_decoding<a class="headerlink" href="#espnet-bin-asr-recog-pre-decoding" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.bin.asr_recog_pre_decoding"></span><p>End-to-end speech recognition model decoding script.</p>
+<dl class="function">
+<dt id="espnet.bin.asr_recog_pre_decoding.get_parser">
+<code class="sig-prename descclassname">espnet.bin.asr_recog_pre_decoding.</code><code class="sig-name descname">get_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/bin/asr_recog_pre_decoding.html#get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.bin.asr_recog_pre_decoding.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get default arguments.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.bin.asr_recog_pre_decoding.main">
+<code class="sig-prename descclassname">espnet.bin.asr_recog_pre_decoding.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/bin/asr_recog_pre_decoding.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.bin.asr_recog_pre_decoding.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the main decoding function.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-bin-mt-trans">
-<span id="id4"></span><h2>espnet.bin.mt_trans<a class="headerlink" href="#espnet-bin-mt-trans" title="Permalink to this headline">¶</a></h2>
+<span id="id5"></span><h2>espnet.bin.mt_trans<a class="headerlink" href="#espnet-bin-mt-trans" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.mt_trans"></span><p>Neural machine translation model decoding script.</p>
 <dl class="function">
 <dt id="espnet.bin.mt_trans.get_parser">
@@ -322,7 +340,7 @@
 
 </div>
 <div class="section" id="espnet-bin-vc-train">
-<span id="id5"></span><h2>espnet.bin.vc_train<a class="headerlink" href="#espnet-bin-vc-train" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2>espnet.bin.vc_train<a class="headerlink" href="#espnet-bin-vc-train" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.vc_train"></span><p>Voice conversion model training script.</p>
 <dl class="function">
 <dt id="espnet.bin.vc_train.get_parser">
@@ -338,11 +356,27 @@
 
 </div>
 <div class="section" id="espnet-bin-init">
-<span id="id6"></span><h2>espnet.bin.__init__<a class="headerlink" href="#espnet-bin-init" title="Permalink to this headline">¶</a></h2>
+<span id="id7"></span><h2>espnet.bin.__init__<a class="headerlink" href="#espnet-bin-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.__init__"></span><p>Initialize sub package.</p>
 </div>
+<div class="section" id="espnet-bin-st-train-pbl">
+<span id="id8"></span><h2>espnet.bin.st_train_pbl<a class="headerlink" href="#espnet-bin-st-train-pbl" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.bin.st_train_pbl"></span><p>End-to-end speech translation model training script.</p>
+<dl class="function">
+<dt id="espnet.bin.st_train_pbl.get_parser">
+<code class="sig-prename descclassname">espnet.bin.st_train_pbl.</code><code class="sig-name descname">get_parser</code><span class="sig-paren">(</span><em class="sig-param">parser=None</em>, <em class="sig-param">required=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/bin/st_train_pbl.html#get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.bin.st_train_pbl.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get default arguments.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.bin.st_train_pbl.main">
+<code class="sig-prename descclassname">espnet.bin.st_train_pbl.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param">cmd_args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/bin/st_train_pbl.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.bin.st_train_pbl.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the main training function.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-bin-asr-train">
-<span id="id7"></span><h2>espnet.bin.asr_train<a class="headerlink" href="#espnet-bin-asr-train" title="Permalink to this headline">¶</a></h2>
+<span id="id9"></span><h2>espnet.bin.asr_train<a class="headerlink" href="#espnet-bin-asr-train" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.asr_train"></span><p>Automatic speech recognition model training script.</p>
 <dl class="function">
 <dt id="espnet.bin.asr_train.get_parser">
@@ -358,7 +392,7 @@
 
 </div>
 <div class="section" id="espnet-bin-lm-train">
-<span id="id8"></span><h2>espnet.bin.lm_train<a class="headerlink" href="#espnet-bin-lm-train" title="Permalink to this headline">¶</a></h2>
+<span id="id10"></span><h2>espnet.bin.lm_train<a class="headerlink" href="#espnet-bin-lm-train" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.lm_train"></span><p>Language model training script.</p>
 <dl class="function">
 <dt id="espnet.bin.lm_train.get_parser">
@@ -374,7 +408,7 @@
 
 </div>
 <div class="section" id="espnet-bin-st-trans">
-<span id="id9"></span><h2>espnet.bin.st_trans<a class="headerlink" href="#espnet-bin-st-trans" title="Permalink to this headline">¶</a></h2>
+<span id="id11"></span><h2>espnet.bin.st_trans<a class="headerlink" href="#espnet-bin-st-trans" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.st_trans"></span><p>End-to-end speech translation model decoding script.</p>
 <dl class="function">
 <dt id="espnet.bin.st_trans.get_parser">
@@ -390,7 +424,7 @@
 
 </div>
 <div class="section" id="espnet-bin-tts-decode">
-<span id="id10"></span><h2>espnet.bin.tts_decode<a class="headerlink" href="#espnet-bin-tts-decode" title="Permalink to this headline">¶</a></h2>
+<span id="id12"></span><h2>espnet.bin.tts_decode<a class="headerlink" href="#espnet-bin-tts-decode" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.tts_decode"></span><p>TTS decoding script.</p>
 <dl class="function">
 <dt id="espnet.bin.tts_decode.get_parser">
@@ -406,7 +440,7 @@
 
 </div>
 <div class="section" id="espnet-bin-asr-align">
-<span id="id11"></span><h2>espnet.bin.asr_align<a class="headerlink" href="#espnet-bin-asr-align" title="Permalink to this headline">¶</a></h2>
+<span id="id13"></span><h2>espnet.bin.asr_align<a class="headerlink" href="#espnet-bin-asr-align" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.asr_align"></span><p>This program performs CTC segmentation to align utterances within audio files.</p>
 <dl class="simple">
 <dt>Inputs:</dt><dd><dl class="simple">
@@ -479,7 +513,7 @@ Results are written to the output file given in the args.</p>
 
 </div>
 <div class="section" id="espnet-bin-vc-decode">
-<span id="id12"></span><h2>espnet.bin.vc_decode<a class="headerlink" href="#espnet-bin-vc-decode" title="Permalink to this headline">¶</a></h2>
+<span id="id14"></span><h2>espnet.bin.vc_decode<a class="headerlink" href="#espnet-bin-vc-decode" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.vc_decode"></span><p>VC decoding script.</p>
 <dl class="function">
 <dt id="espnet.bin.vc_decode.get_parser">
@@ -495,7 +529,7 @@ Results are written to the output file given in the args.</p>
 
 </div>
 <div class="section" id="espnet-bin-asr-enhance">
-<span id="id13"></span><h2>espnet.bin.asr_enhance<a class="headerlink" href="#espnet-bin-asr-enhance" title="Permalink to this headline">¶</a></h2>
+<span id="id15"></span><h2>espnet.bin.asr_enhance<a class="headerlink" href="#espnet-bin-asr-enhance" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.asr_enhance"></span><dl class="function">
 <dt id="espnet.bin.asr_enhance.get_parser">
 <code class="sig-prename descclassname">espnet.bin.asr_enhance.</code><code class="sig-name descname">get_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/bin/asr_enhance.html#get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.bin.asr_enhance.get_parser" title="Permalink to this definition">¶</a></dt>
@@ -508,7 +542,7 @@ Results are written to the output file given in the args.</p>
 
 </div>
 <div class="section" id="espnet-bin-asr-recog">
-<span id="id14"></span><h2>espnet.bin.asr_recog<a class="headerlink" href="#espnet-bin-asr-recog" title="Permalink to this headline">¶</a></h2>
+<span id="id16"></span><h2>espnet.bin.asr_recog<a class="headerlink" href="#espnet-bin-asr-recog" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.bin.asr_recog"></span><p>End-to-end speech recognition model decoding script.</p>
 <dl class="function">
 <dt id="espnet.bin.asr_recog.get_parser">

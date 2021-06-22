@@ -116,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="espnet.bin.html">espnet.bin package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">espnet.st package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-st-init">espnet.st.__init__</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#espnet-st-pytorch-backend-st-pbl">espnet.st.pytorch_backend.st_pbl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-st-pytorch-backend-init">espnet.st.pytorch_backend.__init__</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#espnet-st-pytorch-backend-st">espnet.st.pytorch_backend.st</a></li>
 </ul>
@@ -250,12 +251,55 @@
 <span id="id1"></span><h2>espnet.st.__init__<a class="headerlink" href="#espnet-st-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.st.__init__"></span><p>Initialize sub package.</p>
 </div>
+<div class="section" id="espnet-st-pytorch-backend-st-pbl">
+<span id="id2"></span><h2>espnet.st.pytorch_backend.st_pbl<a class="headerlink" href="#espnet-st-pytorch-backend-st-pbl" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-espnet.st.pytorch_backend.st_pbl"></span><p>Training/decoding definition for the speech translation task.</p>
+<dl class="class">
+<dt id="espnet.st.pytorch_backend.st_pbl.CustomConverter">
+<em class="property">class </em><code class="sig-prename descclassname">espnet.st.pytorch_backend.st_pbl.</code><code class="sig-name descname">CustomConverter</code><span class="sig-paren">(</span><em class="sig-param">subsampling_factor=1</em>, <em class="sig-param">dtype=torch.float32</em>, <em class="sig-param">use_source_text=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/st/pytorch_backend/st_pbl.html#CustomConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.st.pytorch_backend.st_pbl.CustomConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="espnet.asr.html#espnet.asr.pytorch_backend.asr.CustomConverter" title="espnet.asr.pytorch_backend.asr.CustomConverter"><code class="xref py py-class docutils literal notranslate"><span class="pre">espnet.asr.pytorch_backend.asr.CustomConverter</span></code></a></p>
+<p>Custom batch converter for Pytorch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subsampling_factor</strong> (<em>int</em>) – The subsampling factor.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em>) – Data type to convert.</p></li>
+<li><p><strong>use_source_text</strong> (<em>bool</em>) – use source transcription.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Construct a CustomConverter object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.st.pytorch_backend.st_pbl.train">
+<code class="sig-prename descclassname">espnet.st.pytorch_backend.st_pbl.</code><code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/st/pytorch_backend/st_pbl.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.st.pytorch_backend.st_pbl.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train with the given args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="espnet.st.pytorch_backend.st_pbl.trans">
+<code class="sig-prename descclassname">espnet.st.pytorch_backend.st_pbl.</code><code class="sig-name descname">trans</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/espnet/st/pytorch_backend/st_pbl.html#trans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#espnet.st.pytorch_backend.st_pbl.trans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode with the given args.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>namespace</em>) – The program arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="espnet-st-pytorch-backend-init">
-<span id="id2"></span><h2>espnet.st.pytorch_backend.__init__<a class="headerlink" href="#espnet-st-pytorch-backend-init" title="Permalink to this headline">¶</a></h2>
+<span id="id3"></span><h2>espnet.st.pytorch_backend.__init__<a class="headerlink" href="#espnet-st-pytorch-backend-init" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.st.pytorch_backend.__init__"></span><p>Initialize sub package.</p>
 </div>
 <div class="section" id="espnet-st-pytorch-backend-st">
-<span id="id3"></span><h2>espnet.st.pytorch_backend.st<a class="headerlink" href="#espnet-st-pytorch-backend-st" title="Permalink to this headline">¶</a></h2>
+<span id="id4"></span><h2>espnet.st.pytorch_backend.st<a class="headerlink" href="#espnet-st-pytorch-backend-st" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-espnet.st.pytorch_backend.st"></span><p>Training/decoding definition for the speech translation task.</p>
 <dl class="class">
 <dt id="espnet.st.pytorch_backend.st.CustomConverter">
