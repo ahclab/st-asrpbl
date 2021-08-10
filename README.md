@@ -11,7 +11,7 @@ Python >= 3.7
 torch==1.6.0
 ```
 
-## 1. Preprocess for ST 
+## 1. Preprocess for ST
 ```
 $ cd ${HOME}/egs/fisher_callhome_spanish/st1/
 ```
@@ -20,7 +20,7 @@ $ cd ${HOME}/egs/fisher_callhome_spanish/st1/
 $ bash run-proposed.sh
 ```
 
-## Pre-train ASR train
+## 2. Training Pre-trained ASR
 ```
 $ cd ${HOME}/egs/fisher_callhome_spanish/asr1b/
 ```
@@ -36,32 +36,34 @@ $ cd ${HOME}/egs/fisher_callhome_spanish/asr1b/
 $ bash run-proposed.sh
 ```
 
-## Pre-decoding soft labels from pre-trained ASR model
+## 3. Generating Pre-decoding soft labels from pre-trained ASR
 - We added configuration. 
 - `pre_decoding_recog_model=<PRETRAIN_ASR_MODEL_PATH>`
 - `pre_decoding_dir=<SOFT_LABELS_SAVING_DIR_PATH>`
 
 ```bash:run-proposed.sh
- 66 # [ADD] configuration
- 67 data=data
- 68 pre_decoding_recog_model=../asr1b/exp/pretrain-asr-for-pbl/results/model.val1.avg.best
- 69 pre_decoding_dir=../asr1b/exp/pretrain-asr-for-pbl/pre_decoding
- 70 model_module="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl:E2E"
- 71 epochs=30
- 72 asr_weight=0.4
- 73 lsm_weight_st=0.1
- 74 lsm_weight_asr=0.1
- 75 soft_tgt_weight=0.5
+  # [ADD] configuration
+  data=data
+  pre_decoding_recog_model=../asr1b/exp/pretrain-asr-for-pbl/results/model.val1.avg.best
+  pre_decoding_dir=../asr1b/exp/pretrain-asr-for-pbl/pre_decoding
+  model_module="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl:E2E"
+  epochs=30
+  asr_weight=0.4
+  lsm_weight_st=0.1
+  lsm_weight_asr=0.1
+  soft_tgt_weight=0.5
 ```
 - Instead of `stage 3:LM Preparation`, we added `stage 3: Pre-Decoding dev train`
 ```bash:run-proposed
-297 if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
-298     echo "stage 3: Pre-Decoding dev train"
+ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
+     echo "stage 3: Pre-Decoding dev train"
 ```
-- Train ST model (stage3-stage5). 
+# 4. Training ST model (stage3-stage5). 
 ```
 $ bash run-proposed
 ```
+## Changed logs
+Our changed logs are on `${HOME}/changed_log.md`.
 
 ## References and acknowledgement
 
