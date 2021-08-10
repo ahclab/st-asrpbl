@@ -1,10 +1,8 @@
 # ASR Posterior-based Loss for Multi-task Speech Translation
-==
 
 - [Paper(INTERSPEECH2021)](link)
 
 ## Dependencies
-==
 - We will need Kaldi and Python environment of ESPnet (We used venv). 
 - `${HOME}` is your working directory. 
 
@@ -66,6 +64,6 @@ $ bash run-proposed
 ```
 
 ## References and acknowledgement
-==
+
 This repository is a clone of [ESPnet](https://github.com/espnet/espnet). You should consider citing their papers as well if you use this code. 
  
