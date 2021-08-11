@@ -63,7 +63,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
 bash run-proposed.sh
 ```
 ## Changed logs
-Our changed logs are on `${HOME}/changed_log.md`.
+Our changed logs are on [changed_log.md](https://github.com/ahclab/st-asrpbl/blob/master/changed_log.md).
 
 ## References and acknowledgement
 
