@@ -50,7 +50,7 @@ model_module="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl:E2E"
 epochs=30
 asr_weight=0.4
 lsm_weight_st=0.1
-lsm_weight_asr=0.1
+lsm_weight_asr=0.0
 soft_tgt_weight=0.5
 ```
 - Instead of `stage 3:LM Preparation`, we added `stage 3: Pre-Decoding dev train`
