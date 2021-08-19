@@ -1,10 +1,10 @@
 ## changed log
 
-The information would find with `git diff --find-copies-harder d8e1bf011c4d791a5898b72f0f3f15eab3c95450`
+We can see more information with `git diff --find-copies-harder d8e1bf011c4d791a5898b72f0f3f15eab3c95450`
 
-## changed files 
+## main changed files 
 - <CHANGED_FILE>
-    - <COPIED_FROM>
+    - <BASED_FROM>
 
 - egs/fisher_callhome_spanish/asr1b/conf/decode-check-st-asrpbl.yaml
 	- egs/fisher_callhome_spanish/asr1b/conf/decode.yaml
@@ -42,14 +42,13 @@ The information would find with `git diff --find-copies-harder d8e1bf011c4d791a5
 +epochs=30
 +asr_weight=0.4
 +lsm_weight_st=0.1
-+lsm_weight_asr=0.1
++lsm_weight_asr=0.0
 +soft_tgt_weight=0.5
 +
 ```
 - Preparing Pre-decoding soft labels
 
 ```
-+asr_nj=4
 +
 +if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
 +    echo "stage 3: Pre-Decoding dev train"
@@ -131,8 +130,6 @@ The information would find with `git diff --find-copies-harder d8e1bf011c4d791a5
 +        --soft-tgt-weight ${soft_tgt_weight}
  fi
 ```
-- egs/fisher_callhome_spanish/st1/run-st-asrpbl.sh
-	- egs/fisher_callhome_spanish/st1/run.sh
 - espnet/asr/asr_utils_pre_decoding.py
 	- espnet/asr/asr_utils.py
 ```
