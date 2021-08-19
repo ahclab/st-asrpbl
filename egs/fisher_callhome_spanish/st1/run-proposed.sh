@@ -12,8 +12,9 @@ stage=4         # start from 0 if you need to start from data preparation
 stop_stage=100
 ngpu=1          # number of gpus ("0" uses cpu, otherwise use gpu)
 nj=4            # number of parallel jobs for decoding
+asr_nj=4        # [ADD] for st-asrpbl
 debugmode=1
-dumpdir=dump    # directory to dump full features
+dumpdir=dump
 N=0             # number of minibatches to be used (mainly for debugging). "0" uses all minibatches.
 verbose=0       # verbose option
 resume=         # Resume the training from snapshot
@@ -71,12 +72,15 @@ model_module="espnet.nets.pytorch_backend.e2e_st_transformer_asrpbl:E2E"
 epochs=30
 asr_weight=0.4
 lsm_weight_st=0.1
-lsm_weight_asr=0.1
+lsm_weight_asr=0.0
 soft_tgt_weight=0.5
 
 # exp tag
 tag="st-asrpbl-epoch${epochs}-asr_weight${asr_weight}-lsm_weight_st${lsm_weight_st}-lsm_weight_asr${lsm_weight_asr}-soft_tgt_weight${soft_tgt_weight}" # tag for managing experiments.
 echo ${tag}
+expname=${tag}
+expdir=exp/${expname}
+mkdir -p ${expdir}
 
 . utils/parse_options.sh || exit 1;
 
@@ -285,14 +289,7 @@ fi
 # else
 #     expname=${train_set}_${tgt_case}_${backend}_${tag}
 # fi
-# [ADD] exp tag manually
-# expdir=exp/${expname}
 
-expname=${tag}
-expdir=exp/${tag}
-mkdir -p ${expdir}
-
-asr_nj=4
 
 if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
     echo "stage 3: Pre-Decoding dev train"
@@ -326,7 +323,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
         #### use CPU for decoding
         ngpu=0
 
-        # [FOR DEBUG]
+        echo "[START] pre_decoding ${mode} data"
         ${decode_cmd} JOB=1:${asr_nj} ${expdir}/${pre_decoding_mode_dir}/log/decode.JOB.log \
             asr_recog_pre_decoding.py \
             --config ${asr_decode_config} \
@@ -347,8 +344,7 @@ fi
 if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
     echo "stage 4: Network Training"
 
-    # python espnet-link/bin/st_train_pbl.py
-    ${cuda_cmd} --gpu ${ngpu} ${expdir}/${timestamp}_stage${stage}_train.log \
+    ${cuda_cmd} --gpu ${ngpu} ${expdir}/train.log \
         st_train_pbl.py \
         --config ${train_config} \
         --preprocess-conf ${preprocess_config} \
